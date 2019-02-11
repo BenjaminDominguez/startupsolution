@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Hello, {{ user.first }} </h1>
+  {% for job in jobs %}
+  <div>
+    <p>{{job.company.name}} has job for deadline</br>
+        <b> {{month}}/{{day}}/{{year}} </b>
+    </p>
+  </div>
+  {% endfor %}
+{% endblock %}
