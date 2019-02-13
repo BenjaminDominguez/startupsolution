@@ -1,5 +1,8 @@
-from app import db
+from app import db, login
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+genhash, checkhash = generate_password_hash, check_password_hash
+from flask_login import UserMixin
 # from types import BooleanType doesnt exist anymore
 """
 Database relationships
@@ -62,7 +65,7 @@ jobs_developers = db.Table('jobs_developers',
 class BooleanError(Exception):
     pass
 
-class Startupcreator(db.Model):
+class Startupcreator(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(65), index=True, unique=True)
     first = db.Column(db.String(65), index=True)
@@ -78,6 +81,16 @@ class Startupcreator(db.Model):
     def delete_startup(self, startup):
         if self.is_startup_in_bin(startup):
             self.startups.remove(startup)
+
+    def set_password(self, password):
+        self.password_hash = genhash(password)
+
+    def check_password(self, password):
+        return checkhash(self.password_hash, password)
+
+    @login.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     #checking if startup is already StartUpCreators' list of startups
     def is_startup_in_bin(self, startup):
@@ -156,7 +169,7 @@ class Job(db.Model):
         return "Job('{0}')".format(self.name)
 
 
-class Developer(db.Model):
+class Developer(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(65), index=True, unique=True)
     first = db.Column(db.String(64))
@@ -180,6 +193,12 @@ class Developer(db.Model):
     def is_on_job_list(self, job):
         return self.jobs.filter(jobs_developers.c.job_id \
         == job.id).count() != 0
+
+    def set_password(self, password):
+        self.password_hash = genhash(password)
+
+    def check_password(self, password):
+        return checkhash(self.password_hash, password)
 
     def __repr__(self):
         return "Developer('{0}')".format(self.username)

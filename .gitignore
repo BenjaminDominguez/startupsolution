@@ -2,3 +2,5 @@
 .flaskenv
 venv
 __pycache__
+migrations
+*.db
