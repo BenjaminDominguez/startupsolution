@@ -3,16 +3,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 genhash, checkhash = generate_password_hash, check_password_hash
 from flask_login import UserMixin
-# from types import BooleanType doesnt exist anymore
-"""
-Database relationships
---------------------------------------------------------------
-StartUpCreators have Startups
-One StartupCreator has many Startups (Possibly, but not likely)
-Startups have Jobs (One Startup has many (individual) Jobs)
-Many Developers have many jobs
-
-"""
 
 """
 Using Jinja2 to integrate database references within HTML
@@ -58,29 +48,45 @@ http://jinja.pocoo.org/docs/2.10/
 """
 
 # MANY devs have MANY jobs database relationship table.
-jobs_developers = db.Table('jobs_developers',
+jobs_users = db.Table('jobs_users',
     db.Column('job_id', db.Integer, db.ForeignKey('job.id')),
-    db.Column('developer_id', db.Integer, db.ForeignKey('developer.id')))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')))
 
 class BooleanError(Exception):
     pass
 
-class Startupcreator(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(65), index=True, unique=True)
-    first = db.Column(db.String(65), index=True)
-    last = db.Column(db.String(65), index=True)
-    #one startup creator may have many startups. This is unlikely, but still built in.
-    startups = db.relationship('Startup', backref='creator', lazy='dynamic')
+"""
+UserMixin provides the methods that Flask-Login needs to
+operate. Startup is inheriting those methods and attributes
+These include:
+Attribute is_authenticated
+Attribute is_active
+Attribute is_anonymous
+Method get_id()
+"""
 
-    #adding a particular instance of a startup to the list of Startupcreators' startups
-    def create_startup(self, startup):
-        if not self.is_startup_in_bin(startup):
-            self.startups.append(startup)
-    #remove startup from list of startups
-    def delete_startup(self, startup):
-        if self.is_startup_in_bin(startup):
-            self.startups.remove(startup)
+""""
+Users have one startup, if they are an employer
+Users have many jobs, if they are a freelancer
+One job has one freelancer
+User to jobs is a one to many relationship!!!!
+One startup has many jobs.
+
+"""
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    password_hash = db.Column(db.String(64))
+    role = db.Column(db.String(64)) # must be either "Employer" or "Freelancer"
+    first = db.Column(db.String(64), index=True)
+    last = db.Column(db.String(64), index=True)
+    email = db.Column(db.String(64), index=True)
+    occupation = db.Column(db.String(64), index=True, default='Developer')
+    # one to one relationship between user and startup
+    startup = db.relationship('Startup', backref='admin', lazy='dynamic')
+    # one to many relationship between user and jobs
+    jobs = db.relationship('Job', backref='freelancer', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = genhash(password)
@@ -90,20 +96,46 @@ class Startupcreator(UserMixin, db.Model):
 
     @login.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return Startup.query.get(int(id))
 
-    #checking if startup is already StartUpCreators' list of startups
-    def is_startup_in_bin(self, startup):
-        return (startup in self.startups)
+    def create_startup(self, startup):
+        if self.role == 'Employer':
+            self.startup.append(startup)
+        else:
+            print("Not an employer")
 
-    def __repr__(self):
-        return "Startupcreator('{0}')".format(self.username)
+    def add_job_to_job_list(self, job):
+        if not self.is_on_job_list(job) and self.role == 'Freelancer':
+            self.jobs.append(job)
 
-class Startup(db.Model):
+    def remove_job_from_job_list(self, job):
+        if self.is_on_job_list(job) and self.role == 'Freelancer':
+            self.jobs.remove(job)
+
+    def is_on_job_list(self, job):
+        return self.jobs.filter(jobs_users.c.job_id \
+        == job.id).count() != 0
+
+    def delete_startup(self, startup):
+        pass # not sure if I should add this functionality yet, does not make sense.
+
+    def info(self):
+        if self.role == 'Employer':
+            return '<Employer {0}>'.format(self.username)
+        elif self.role == 'Freelancer':
+            return '<Freelancer {0} {1}>'.format(self.first, self.last)
+        else:
+            return '<ROLE NOT ASSIGNED FOR {0}>'.format(self.username)
+
+    __repr__ = info
+
+
+class Startup(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True)
+    company_name = db.Column(db.String(64), index=True, unique=True)
     founded_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     website = db.Column(db.String(64), unique=True, index=True)
+    #one to one relationship
     """
     information that should be available to developers who
     are considering taking equity in the firm
@@ -112,8 +144,11 @@ class Startup(db.Model):
     previously_funded = db.Column(db.Boolean) # this can be marked with a check
     certificate_of_incorporation = db.Column(db.Boolean, default=True)
     state_of_incorporation = db.Column(db.String(64), default='Delaware')
-    creator_id = db.Column(db.Integer, db.ForeignKey('startupcreator.id'))
+    company_type = db.Column(db.String(64), default='C-Corp')
+    taxID = db.Column(db.String(64), default='00-0000000')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     jobs = db.relationship('Job', backref='company', lazy='dynamic')
+
 
     def mark_complete(self):
         self.is_complete = True
@@ -150,55 +185,19 @@ class Startup(db.Model):
     def set_founded_date(self, year, month, day):
         self.founded_date = datetime(year, month, day)
 
-    def __repr__(self):
-        return "Startup('{0}')".format(self.name)
+    def info(self):
+        return "<Startup {0}>".format(self.company_name)
+
+    __repr__ = info
 
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     is_complete = db.Column(db.Boolean)
     startup_id = db.Column(db.Integer, db.ForeignKey('startup.id'))
-    developers = db.relationship(
-    'Developer',
-    secondary=jobs_developers,
-    back_populates='jobs',
-    lazy='dynamic'
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __repr__(self):
-        return "Job('{0}')".format(self.name)
+    def info(self):
+        return '<Job {0}>'.format(self.name)
 
-
-class Developer(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(65), index=True, unique=True)
-    first = db.Column(db.String(64))
-    last = db.Column(db.String(64))
-    occupation = db.Column(db.String(64), index=True, default='Developer')
-    jobs = db.relationship(
-    'Job',
-    secondary=jobs_developers,
-    back_populates='developers',
-    lazy='dynamic'
-    )
-
-    def add_job_to_job_list(self, job):
-        if not self.is_on_job_list(job):
-            self.jobs.append(job)
-
-    def remove_job_from_job_list(self, job):
-        if self.is_on_job_list(job):
-            self.jobs.remove(job)
-
-    def is_on_job_list(self, job):
-        return self.jobs.filter(jobs_developers.c.job_id \
-        == job.id).count() != 0
-
-    def set_password(self, password):
-        self.password_hash = genhash(password)
-
-    def check_password(self, password):
-        return checkhash(self.password_hash, password)
-
-    def __repr__(self):
-        return "Developer('{0}')".format(self.username)
+    __repr__ = info

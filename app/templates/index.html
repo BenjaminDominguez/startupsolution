@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Hello, {{ user.first }} </h1>
+  <h1>Hello, {{ current_user.username }} </h1>
+  <p>Your role is {{ current_user.role }}</p>
   {% for job in jobs %}
   <div>
-    <p>{{job.company.name}} has job for deadline</br>
+    <p>{{job.company.name}} has job for deadline<br>
         <b> {{month}}/{{day}}/{{year}} </b>
     </p>
   </div>
