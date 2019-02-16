@@ -8,13 +8,15 @@
   </head>
   <body>
       <div>PartnerUp:
-        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('index') }}">Home</a>|
         <!if the current_user is logged in, current_user.is_anonymous will be False---->
         {% if current_user.is_anonymous %}
-        <a href="{{ url_for('login') }}">Login here</a>
+        <a href="{{ url_for('login') }}">Login here</a>|
         {% else %}
-        <a href="{{ url_for('logout') }}">Logout here</a>
+        <a href="{{ url_for('logout') }}">Logout here</a>|
         {% endif %}
+        <a href="{{ url_for('jobs_available') }}">Jobs available</a>|
+        <a href="{{ url_for('freelancers_available' )}}">Freelancers available for hire</a>|
       </div>
       <hr>
       {% with messages = get_flashed_messages() %}

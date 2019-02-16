@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{% with p = j.query.all() %}
+  <h1> Job's currently available </h1>
+  {% for job in p %}
+    <b><p>{{ job.name }}</p></b>
+    <p> Posted by {{ job.company.company_name }}</p>
+  {% endfor %}
+{% endwith %}
+
+{% endblock %}

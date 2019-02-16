@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{% with f = u.query.filter_by(role='Freelancer') %}
+  <h1> Freelancer's available for hire </h1>
+  {% for freelancer in f %}
+    <b><p>{{ freelancer.username }}</p></b>
+    <p> {{ freelancer.occupation }}</p>
+  {% endfor %}
+{% endwith %}
+
+{% endblock %}
