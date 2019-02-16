@@ -81,6 +81,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(64)) # must be either "Employer" or "Freelancer"
     first = db.Column(db.String(64), index=True)
     last = db.Column(db.String(64), index=True)
+    registration_date = db.Column(db.DateTime, index=True)
     email = db.Column(db.String(64), index=True)
     occupation = db.Column(db.String(64), index=True, default='Developer')
     # one to one relationship between user and startup
@@ -96,13 +97,19 @@ class User(UserMixin, db.Model):
 
     @login.user_loader
     def load_user(id):
-        return Startup.query.get(int(id))
+        return User.query.get(int(id))
+
+    def set_registration_date(self):
+        self.registration_date = datetime.now()
 
     def create_startup(self, startup):
         if self.role == 'Employer':
             self.startup.append(startup)
         else:
             print("Not an employer")
+
+    def get_username(self):
+        return self.username
 
     def add_job_to_job_list(self, job):
         if not self.is_on_job_list(job) and self.role == 'Freelancer':

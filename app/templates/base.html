@@ -1,33 +1,41 @@
-<html>
-  <head>
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
     {% if title %}
-    <title>{{ title }}</title>
+          {{ title }}
     {% else %}
-    <title>Welcome to PartnerUp</title>
+          Welcome to PartnerUp
     {% endif %}
-  </head>
-  <body>
-      <div>PartnerUp:
-        <a href="{{ url_for('index') }}">Home</a>|
-        <!if the current_user is logged in, current_user.is_anonymous will be False---->
-        {% if current_user.is_anonymous %}
-        <a href="{{ url_for('login') }}">Login here</a>|
-        {% else %}
-        <a href="{{ url_for('logout') }}">Logout here</a>|
-        {% endif %}
-        <a href="{{ url_for('jobs_available') }}">Jobs available</a>|
-        <a href="{{ url_for('freelancers_available' )}}">Freelancers available for hire</a>|
-      </div>
-      <hr>
-      {% with messages = get_flashed_messages() %}
+{% endblock %}
+
+
+{% block navbar %}
+  <nav class="navbar navbar-default">
+    <p>  PartnerUp - {{ current_user.username }} </p>
+<a href="{{ url_for('index') }}">Home</a>
+{% if current_user.is_anonymous %}
+<a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+<a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+<a href="{{ url_for('jobs_available') }}">Jobs available</a>
+<a href="{{ url_for('freelancers_available' )}}">Freelancers available for hire</a>
+<a href="{{ url_for('user', username=current_user.username) }}">User dashboard</a>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
+        {% for message in messages %}
+        <div class="alert alert-info" role="alert">{{ message }}</div>
+        {% endfor %}
     {% endif %}
     {% endwith %}
-      {% block content %}{% endblock %}
-  </body>
-</html>
+
+
+    {% block app_content %}{% endblock %}
+</div>
+{% endblock %}

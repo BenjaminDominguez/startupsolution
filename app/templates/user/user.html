@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h4> Your current pending jobs </h4><hr>
+{% for job in jobs %}
+          <p>Job title: {{ job.name }}<p>
+          <p>Startup: {{ job.company.company_name }}
+          <hr>
+{% endfor %}
+{% if no_jobs %}
+<p>No jobs assigned yet!
+  Look for some here: <a href="{{ url_for('jobs_available')}}">Jobs Available</a>
+</p>
+{% endif %}
+{% endblock %}

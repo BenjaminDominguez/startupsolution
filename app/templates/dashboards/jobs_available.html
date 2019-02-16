@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}
+{% block app_content %}
 {% with p = j.query.all() %}
   <h1> Job's currently available </h1>
   {% for job in p %}

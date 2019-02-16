@@ -129,7 +129,12 @@ def freelancers_available():
 @app.route('/employers/jobs')
 def jobs_available():
     return render_template("dashboards/jobs_available.html", title='Jobs available', j=Job)
-# @app.route('user/<username>')
-# def user(username):
-#     user = User.query.filter_by(username=username).first_or_404()
-#     return "pass"
+
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    jobs = [job for job in user.jobs]
+    if len(jobs) == 0:
+        no_jobs = True
+    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=no_jobs)

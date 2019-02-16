@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}
+{% block app_content %}
 {% with f = u.query.filter_by(role='Freelancer') %}
   <h1> Freelancer's available for hire </h1>
   {% for freelancer in f %}
