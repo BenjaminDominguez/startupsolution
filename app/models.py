@@ -3,7 +3,10 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 genhash, checkhash = generate_password_hash, check_password_hash
 from flask_login import UserMixin
-
+import os
+import base64
+import onetimepass
+from hashlib import md5
 """
 Using Jinja2 to integrate database references within HTML
 ------------------------------------------------------------------
@@ -74,6 +77,8 @@ One startup has many jobs.
 
 """
 
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -88,6 +93,20 @@ class User(UserMixin, db.Model):
     startup = db.relationship('Startup', backref='admin', lazy='dynamic')
     # one to many relationship between user and jobs
     jobs = db.relationship('Job', backref='freelancer', lazy='dynamic')
+    social_id = db.Column(db.String(64), nullable=True) #nullable?
+    about_me = db.Column(db.String(1000))
+    avatar_data = db.Column(db.String(400))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def avatar(self, size):
+        """
+        convert email to all lower case because this is what is required by
+        Gravatar, and encode the string to bytes before passing it to
+        the hash function.
+        """
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+            digest, size)
 
     def set_password(self, password):
         self.password_hash = genhash(password)
@@ -156,6 +175,15 @@ class Startup(UserMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     jobs = db.relationship('Job', backref='company', lazy='dynamic')
 
+    def logo(self, size):
+        """
+        convert email to all lower case because this is what is required by
+        Gravatar, and encode the string to bytes before passing it to
+        the hash function.
+        """
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+            digest, size)
 
     def mark_complete(self):
         self.is_complete = True

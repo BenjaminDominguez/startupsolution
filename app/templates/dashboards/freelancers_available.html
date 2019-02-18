@@ -3,9 +3,15 @@
 {% with f = u.query.filter_by(role='Freelancer') %}
   <h1> Freelancer's available for hire </h1>
   {% for freelancer in f %}
-    <b><p>{{ freelancer.username }}</p></b>
-    <p> {{ freelancer.occupation }}</p>
+  <table>
+    <tr valign="top">
+      <td><img src="{{ freelancer.avatar(32) }}"></td>
+      <td><a href="{{url_for('user', username=freelancer.username)}}">{{ freelancer.username }}</a>, {{freelancer.occupation}}</td>
+    </tr>
+  </table>
+  <br>
   {% endfor %}
 {% endwith %}
+
 
 {% endblock %}

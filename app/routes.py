@@ -1,10 +1,13 @@
 from app import app, db
+import os
 from app.models import Startup, Job, User
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
-EmployerRegistrationForm, FreelancerForm
+EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic
 from werkzeug.urls import url_parse
+from werkzeug import secure_filename
+from datetime import datetime
 
 @app.route('/')
 @app.route('/index')
@@ -32,7 +35,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None:
-            flash('No such user found')
+            flash('Username does not exist')
             return redirect(url_for('login'))
         elif user.check_password(str(form.password.data)) is False:
             flash("Incorrect password. Try again.")
@@ -116,8 +119,10 @@ def freelancer_registration():
     user = User.query.filter_by(username=request.args['user']).first()
     form = FreelancerForm()
     if form.validate_on_submit():
-        user.first, user.last, user.occupation = form.first.data, form.last.data, form.occupation.data
+        user.first, user.last, user.occupation, user.about_me = form.first.data, \
+        form.last.data, form.occupation.data, form.about_me.data
         db.session.commit()
+        login_user(user)
         flash("Successfully created user profile {0}, with first {1} and last {2}".format(user.username, user.first, user.last))
         return redirect(url_for('login'))
     return render_template('registration/freelancer_registration.html', title='Register!', form=form)
@@ -135,6 +140,58 @@ def jobs_available():
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     jobs = [job for job in user.jobs]
-    if len(jobs) == 0:
-        no_jobs = True
-    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=no_jobs)
+    no_profile_pic = bool(user.avatar_data is None)
+    avatar_url=None
+    if not no_profile_pic:
+        url = user.avatar_data.split('/')
+        avatar_url = "/{0}/{1}".format(url[-2], url[-1])
+    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=bool(len(jobs) == 0), no_profile_pic=no_profile_pic, avatar_url=avatar_url)
+"""
+The before request decorator allows me to
+run this function before any other view function.
+This function simply checks if the current user is logged in
+and if they are, set the last seen to utcnow()
+"""
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        #check if username already exists
+        current_user.username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        flash("Your changes have been saved!")
+        return redirect(url_for('edit_profile'))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+    return render_template('user/edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/upload_profile_pic', methods=['GET', 'POST'])
+@login_required
+def upload_profile_pic():
+    form = UploadProfilePic()
+    if form.validate_on_submit():
+        file = request.files['profile_pic']
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        current_user.avatar_data = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        flash("Succesfully submitted profile pic!")
+        db.session.commit()
+        return redirect(url_for('user', username=current_user.username))
+    return render_template('user/upload_profile_pic.html', title='Upload Profile Pic', form=form)
+
+@app.route('/github')
+def login_with_github():
+    return "pass"
+
+@app.route('/linkedin')
+def login_with_linkedin():
+    return "pass"

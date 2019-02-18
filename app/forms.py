@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField,\
-SubmitField, SelectField, DateTimeField
+SubmitField, SelectField, DateTimeField, TextAreaField
 from wtforms.validators import ValidationError, DataRequired, DataRequired, Email,\
-EqualTo
+EqualTo, Length
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from app.models import User, Startup
 
 company_types = ['Limited Liability Corporation', 'Limited Partnership', 'S-Corp', 'Corporation (Inc.)', 'Sole Proprietorship', 'Partnership']
@@ -60,7 +61,8 @@ class EmployerRegistrationForm(FlaskForm):
     #Im taking out date of incorporation for now
     # date_of_incorporation = DateTimeField("Date of incorporation?", validators=[DataRequired()]) #matches with founded date, need to update models
     taxID = StringField("Tax ID (if US)", validators=[DataRequired()])
-    submit = SubmitField("Finish registration for now!")
+    company_logo = StringField("Upload a company logo")
+    submit = SubmitField('Finish registration for now!')
 
     def validate_company_name(self, company_name):
         name = Startup.query.filter_by(company_name=company_name.data).first()
@@ -71,4 +73,21 @@ class FreelancerForm(FlaskForm):
     first = StringField("First name", validators=[DataRequired()])
     last = StringField("Last name", validators=[DataRequired()])
     occupation = SelectField("What job do you do?", choices=jobs_tup, validators=[DataRequired()])
+    about_me = TextAreaField('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.', validators=[Length(min=0, max=1000)])
     submit = SubmitField("Finish Registration for now!")
+
+class EditProfileForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    about_me = TextAreaField('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.', validators=[Length(min=0, max=1000)])
+    submit = SubmitField('Submit')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None and user.username != username.data:
+            raise ValidationError('Username taken. Please select a different one.')
+
+class UploadProfilePic(FlaskForm):
+    profile_pic = FileField('Profile Pic', validators=\
+    [FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
+    submit = SubmitField('Submit')
+    

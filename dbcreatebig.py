@@ -13,7 +13,8 @@ while count > 0:
         first, last = fake.name().lower().split()
         num = str(number(0, 9)) + str(number(0, 9)) + str(number(0, 9))
         username = first[0] + last[0] + num
-        user = User(username=username, first=first, last=last, role='Freelancer')
+        email = username + '@gmail.com'
+        user = User(username=username, first=first, last=last, email=email, role='Freelancer')
         db.session.add(user)
         user.set_password('password')
         db.session.commit()

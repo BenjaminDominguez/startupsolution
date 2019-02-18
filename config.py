@@ -6,3 +6,17 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
     'sqlite:///' + os.path.join(base_directory, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/app/static/database_files'
+    OAUTH_CREDENTIALS = {
+    'linkedin': {
+        'id': '470154729788964',
+        'secret': '010cc08bd4f51e34f3f3e684fbdea8a7'
+    },
+    'github': {
+        'id': '3RzWQclolxWZIMq5LJqzRZPTl',
+        'secret': 'm9TEd58DSEtRrZHpz2EjrV9AhsBRxKMo8m3kuIZj3zLwzwIimt'
+    }
+}
+# to grab a key with nested dictionaries
+# to get id of facebook
+# app.config['OAUTH_CREDENTIALS']['linkedin']['id']
