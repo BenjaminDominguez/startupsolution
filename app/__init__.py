@@ -10,6 +10,8 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
+# I'm not sure if this works or not yet, need to git pull
+bootstrap = Bootstrap(app)
 login.init_app(app)
 login.login_view = 'login'
 login.session_protection = "strong"
