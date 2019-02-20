@@ -1,13 +1,20 @@
 from app import app, db
 import os
 from app.models import Startup, Job, User
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
-EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic
+EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic, EditCompanyForm,\
+PostNewJobForm
 from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 from datetime import datetime
+
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
 
 @app.route('/')
 @app.route('/index')
@@ -49,8 +56,7 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
-        flash("Login requested for Startup {0}, remember_me {1}"\
-        .format(user.username, form.remember_me.data))
+        flash("Login succesful")
         return redirect(next_page)
     return render_template('login.html', title='Login', form=form)
 
@@ -97,18 +103,24 @@ def employer_registration():
     user = User.query.filter_by(username=request.args['user']).first()
     form = EmployerRegistrationForm()
     if form.validate_on_submit():
+        file = request.files['logo']
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         startup_kwargs = {
         'company_name': form.company_name.data,
+        'email': user.email,
         'state_of_incorporation': form.state_of_incorporation.data,
         'company_type': form.company_type.data,
-        'taxID': form.taxID.data
+        'taxID': form.taxID.data,
+        'logo_data': os.path.join(app.config['UPLOAD_FOLDER'], filename),
+        'description': description
         }
         startup = Startup(**startup_kwargs)
         db.session.add(startup)
         user.create_startup(startup)
         db.session.commit()
         login_user(user)
-        flash("Successfully registered {0} with company {1}".format(user.username, startup.company_name))
+        flash("Successfully registered your company {1}!".format(startup.company_name))
         return redirect(url_for('login'))
     return render_template('registration/employer_registration.html', title='Register your company!', form=form)
 
@@ -119,11 +131,11 @@ def freelancer_registration():
     user = User.query.filter_by(username=request.args['user']).first()
     form = FreelancerForm()
     if form.validate_on_submit():
-        user.first, user.last, user.occupation, user.about_me = form.first.data, \
-        form.last.data, form.occupation.data, form.about_me.data
+        user.first, user.last, user.occupation, user.about_me, user.hours_a_week = form.first.data, \
+        form.last.data, form.occupation.data, form.about_me.data, form.hours_a_week.data
         db.session.commit()
         login_user(user)
-        flash("Successfully created user profile {0}, with first {1} and last {2}".format(user.username, user.first, user.last))
+        flash("Successfully created profile!")
         return redirect(url_for('login'))
     return render_template('registration/freelancer_registration.html', title='Register!', form=form)
 
@@ -139,25 +151,119 @@ def jobs_available():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    if user.role == "Employer":
+        abort(404)
     jobs = [job for job in user.jobs]
-    no_profile_pic = bool(user.avatar_data is None)
-    avatar_url=None
-    if not no_profile_pic:
+    #set outside of the conditional because need to use profile_pic as a variable later
+    profile_pic = user.avatar_data is not None
+    if profile_pic:
         url = user.avatar_data.split('/')
         avatar_url = "/{0}/{1}".format(url[-2], url[-1])
-    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=bool(len(jobs) == 0), no_profile_pic=no_profile_pic, avatar_url=avatar_url)
-"""
-The before request decorator allows me to
-run this function before any other view function.
-This function simply checks if the current user is logged in
-and if they are, set the last seen to utcnow()
-"""
-@app.before_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
+    else:
+        avatar_url = None
+    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=bool(len(jobs) == 0), profile_pic=profile_pic, avatar_url=avatar_url)
 
+@app.route('/company/<company_name>', methods=['GET', 'POST'])
+@login_required
+def company(company_name):
+    company = Startup.query.filter_by(company_name=company_name).first_or_404()
+    # for now, but I have to see how competitors treat this
+    form = PostNewJobForm()
+    if current_user.role == 'Freelancer':
+        abort(404)
+    is_admin = (current_user.startup[0] == company)
+    if is_admin:
+        jobs = company.jobs
+        no_jobs = (len([job for job in jobs]) == 0)
+    else:
+        jobs, no_jobs = None, True
+    logo_pic = company.logo_data is not None
+    if logo_pic:
+        url = company.logo_data.split('/')
+        logo_url = "/{0}/{1}".format(url[-2], url[-1])
+    if form.validate_on_submit():
+        kwargs = {
+        'name': form.name.data,
+        'job_description': form.job_description.data,
+        'offer_price': form.offer_price.data,
+        'job_type': form.job_type.data,
+        'estimated_developement_time': form.estimated_developement_time.data,
+        'equity_job': form.equity_job.data
+        }
+        job = Job(**kwargs)
+        job.post_job_time()
+        db.session.add(job)
+        company.create_job(job)
+        db.session.commit()
+        flash('Successfully created new job')
+        return redirect(url_for('company', company_name=company_name))
+    kwargs= {
+    'title': company_name,
+    'company_name': company_name,
+    'company': company,
+    'is_admin': is_admin,
+    'jobs': jobs,
+    'no_jobs': no_jobs,
+    'logo_url': logo_url,
+    'form': form
+    }
+    return render_template('company/company.html', **kwargs)
+
+@app.route('/company/<company_name>/edit_profile', methods=['GET', 'POST'])
+@login_required
+def company_edit_profile(company_name):
+    company = Startup.query.filter_by(company_name = company_name).first_or_404()
+    if current_user.startup[0] != company:
+        abort(404)
+    form = EditCompanyForm()
+    if form.validate_on_submit():
+        company.description = form.description.data
+        db.session.commit()
+        flash('Succesfully made changes')
+    if request.method == 'GET':
+        form.description.data = company.description
+    return render_template('company/edit_company_profile.html', title='Edit your profile', form = form)
+
+@app.route('/company/<company_name>/new_job_posting', methods=['GET', 'POST'])
+def new_job_posting(company_name):
+    company = Startup.query.filter_by(company_name=company_name).first_or_404()
+    is_admin = (current_user.startup[0] == company)
+    if not current_user.is_authenticated or not is_admin:
+        abort(404)
+    form = PostNewJobForm()
+    if form.validate_on_submit():
+        kwargs = {
+        'name': form.name.data,
+        'job_description': form.job_description.data,
+        'offer_price': form.offer_price.data,
+        'job_type': form.job_type.data,
+        'estimated_developement_time': form.estimated_developement_time.data,
+        'equity_job': form.equity_job.data
+        }
+        job = Job(**kwargs)
+        job.post_job_time()
+        db.session.add(job)
+        company.create_job(job)
+        db.session.commit()
+        flash('Successfully created new job')
+        return redirect(url_for('company', company_name=company_name))
+    return render_template('company/new_job_listing.html', title='Create new job listing', form=form)
+
+"""
+
+This is not working right now
+"""
+@app.route('/company/<company_name>/<job>/delete_job')
+def delete_job(company_name, job):
+    job = Job.query.filter_by(name = job)
+    db.session.delete(job)
+    db.session.commit()
+    return redirect(url_for('company', company_name=company_name))
+
+# The before request decorator allows me to
+# run this function before any other view function.
+# This function simply checks if the current user is logged in
+# and if they are, set the last seen to utcnow()
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -187,6 +293,11 @@ def upload_profile_pic():
         db.session.commit()
         return redirect(url_for('user', username=current_user.username))
     return render_template('user/upload_profile_pic.html', title='Upload Profile Pic', form=form)
+
+@app.route('/post_job', methods=['GET', 'POST'])
+@login_required
+def post_job():
+    return "pass"
 
 @app.route('/github')
 def login_with_github():

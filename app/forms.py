@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField,\
-SubmitField, SelectField, DateTimeField, TextAreaField
+SubmitField, SelectField, DateTimeField, TextAreaField, RadioField
 from wtforms.validators import ValidationError, DataRequired, DataRequired, Email,\
 EqualTo, Length
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from app.models import User, Startup
 
 company_types = ['Limited Liability Corporation', 'Limited Partnership', 'S-Corp', 'Corporation (Inc.)', 'Sole Proprietorship', 'Partnership']
+
+job_types = ['iOS Developement', 'Static website', 'Web application', 'Design', 'Marketing']
 
 states = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
           "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
@@ -15,10 +17,15 @@ states = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DC", "DE", "FL", "GA",
           "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 
 jobs = ['iOS Developement', 'Full-Stack Web Dev', 'Front-End Web Dev', 'Backend Web Dev']
+job_times = ['1 - 4 weeks', '1 - 2 months', '2 - 6 months', 'Over 6 months']
+hours_a_week = ['Less than 10 hours a week', '10 to 20 hours a week', '20 to 30 hours a week', '30 to 40 hours a week', 'Over 40 hours a ']
 
 states_tup = tuple(zip(states, states))
 company_types_tup = tuple(zip(company_types, company_types))
 jobs_tup = tuple(zip(jobs, jobs))
+job_types_tup = tuple(zip(job_types, job_types))
+job_times_tup = tuple(zip(job_times, job_times))
+hours_a_week_tup = tuple(zip(hours_a_week, hours_a_week))
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -61,7 +68,9 @@ class EmployerRegistrationForm(FlaskForm):
     #Im taking out date of incorporation for now
     # date_of_incorporation = DateTimeField("Date of incorporation?", validators=[DataRequired()]) #matches with founded date, need to update models
     taxID = StringField("Tax ID (if US)", validators=[DataRequired()])
-    company_logo = StringField("Upload a company logo")
+    description = TextAreaField("Tell us about your company!", validators=[DataRequired()])
+    #data is required for now..
+    logo = FileField("Upload a company logo/profile pic", validators=[DataRequired()])
     submit = SubmitField('Finish registration for now!')
 
     def validate_company_name(self, company_name):
@@ -73,6 +82,7 @@ class FreelancerForm(FlaskForm):
     first = StringField("First name", validators=[DataRequired()])
     last = StringField("Last name", validators=[DataRequired()])
     occupation = SelectField("What job do you do?", choices=jobs_tup, validators=[DataRequired()])
+    hours_a_week = SelectField("How many hours a week are you available?", choices=hours_a_week_tup, validators=[DataRequired()])
     about_me = TextAreaField('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.', validators=[Length(min=0, max=1000)])
     submit = SubmitField("Finish Registration for now!")
 
@@ -90,4 +100,16 @@ class UploadProfilePic(FlaskForm):
     profile_pic = FileField('Profile Pic', validators=\
     [FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
     submit = SubmitField('Submit')
-    
+
+class EditCompanyForm(FlaskForm):
+    description = TextAreaField('Change company description', validators=[DataRequired()])
+    submit = SubmitField('Submit changes')
+
+class PostNewJobForm(FlaskForm):
+    name = TextAreaField('Enter a job posting title', validators=[DataRequired()])
+    job_description = TextAreaField('Enter a brief job description', validators=[DataRequired()])
+    offer_price = StringField('Enter an initial listing price (in US dollars)', validators=[DataRequired()])
+    job_type = SelectField('What type of work?', choices=job_types_tup, validators=[DataRequired()])
+    estimated_developement_time = SelectField('Expected completion time', choices=job_times_tup, validators=[DataRequired()])
+    equity_job = BooleanField('Work for equity job (Select if you are willing to offer some form of equity as compensation)')
+    submit = SubmitField('Submit job listing!')

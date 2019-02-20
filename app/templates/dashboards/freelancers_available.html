@@ -5,7 +5,11 @@
   {% for freelancer in f %}
   <table>
     <tr valign="top">
+      {% if freelancer.avatar_data %}
+      <td><img src="{{ freelancer.make_avatar_url() }}">
+      {% else %}
       <td><img src="{{ freelancer.avatar(32) }}"></td>
+      {% endif %}
       <td><a href="{{url_for('user', username=freelancer.username)}}">{{ freelancer.username }}</a>, {{freelancer.occupation}}</td>
     </tr>
   </table>

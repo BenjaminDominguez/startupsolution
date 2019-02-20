@@ -8,7 +8,6 @@
     {% endif %}
 {% endblock %}
 
-
 {% block navbar %}
   <nav class="navbar navbar-default">
     <p>  PartnerUp - {{ current_user.username }} </p>
@@ -21,7 +20,11 @@
 <a href="{{ url_for('jobs_available') }}">Jobs available</a>
 <a href="{{ url_for('freelancers_available' )}}">Freelancers available for hire</a>
 {% if current_user.is_authenticated %}
+{% if current_user.role == "Freelancer" %}
 <a href="{{ url_for('user', username=current_user.username) }}">User dashboard</a>
+{% elif current_user.role == "Employer" %}
+<a href="{{ url_for('company', company_name=current_user.startup[0].company_name)}}">Company dashboard</a>
+{% endif %}
 {% endif %}
 </nav>
 {% endblock %}

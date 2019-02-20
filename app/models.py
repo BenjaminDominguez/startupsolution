@@ -88,6 +88,7 @@ class User(UserMixin, db.Model):
     last = db.Column(db.String(64), index=True)
     registration_date = db.Column(db.DateTime, index=True)
     email = db.Column(db.String(64), index=True)
+    hours_a_week = db.Column(db.String(64))
     occupation = db.Column(db.String(64), index=True, default='Developer')
     # one to one relationship between user and startup
     startup = db.relationship('Startup', backref='admin', lazy='dynamic')
@@ -107,6 +108,12 @@ class User(UserMixin, db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
+
+    def make_avatar_url(self):
+        if self.avatar_data:
+            url = self.avatar_data.split('/')
+            avatar_url = "/{0}/{1}".format(url[-2], url[-1])
+        return avatar_url
 
     def set_password(self, password):
         self.password_hash = genhash(password)
@@ -161,6 +168,7 @@ class Startup(UserMixin, db.Model):
     company_name = db.Column(db.String(64), index=True, unique=True)
     founded_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     website = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64), unique=True, index=True)
     #one to one relationship
     """
     information that should be available to developers who
@@ -172,7 +180,9 @@ class Startup(UserMixin, db.Model):
     state_of_incorporation = db.Column(db.String(64), default='Delaware')
     company_type = db.Column(db.String(64), default='C-Corp')
     taxID = db.Column(db.String(64), default='00-0000000')
+    description = db.Column(db.String(1000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    logo_data = db.Column(db.String(400))
     jobs = db.relationship('Job', backref='company', lazy='dynamic')
 
     def logo(self, size):
@@ -184,6 +194,12 @@ class Startup(UserMixin, db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
+
+    def make_logo_url(self):
+        if self.logo_data:
+            url = self.logo_data.split('/')
+            logo_url = "/{0}/{1}".format(url[-2], url[-1])
+        return logo_url
 
     def mark_complete(self):
         self.is_complete = True
@@ -228,9 +244,32 @@ class Startup(UserMixin, db.Model):
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
+    job_description = db.Column(db.String(1000))
+    offer_price = db.Column(db.Integer, index=True)
+    job_type = db.Column(db.String(200), index=True)
+    equity_job = db.Column(db.Boolean)
+    posted_on = db.Column(db.DateTime)
+    estimated_developement_time = db.Column(db.String(40), index=True)
     is_complete = db.Column(db.Boolean)
     startup_id = db.Column(db.Integer, db.ForeignKey('startup.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def post_job_time(self):
+        now = datetime.utcnow()
+        self.posted_on = now
+
+    def time_elapsed(self):
+        try:
+            time = datetime.utcnow() - self.posted_on
+        except TypeError:
+            return ('hours', 5)
+        hours = time.days*24 + time.seconds/3600
+        if hours > 24:
+            return ('days', int(round(time.days)))
+        elif hours < 24 and hours > 1:
+            return ('hours', int(round(hours)))
+        elif hours < 1:
+            return ('minutes', int(round(time.seconds/60, 0)))
 
     def info(self):
         return '<Job {0}>'.format(self.name)

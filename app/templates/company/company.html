@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+
+<table>
+{% if company.logo_data %}
+<tr valign="top">
+  <td><img src="{{ logo_url }}" width=100 height=100></td>
+{% else %}
+<tr valign="top">
+  <td><img src="{{ company.logo(128) }}" width=100 height=100></td>
+{% endif %}
+<td>
+  <h4>{{ company.company_name }}</h4>
+  <p> {{ company.description }}</p>
+</td>
+</tr>
+</table>
+<h4><a href="{{ url_for('company_edit_profile', company_name=company_name)}}">Edit Profile</a></h4>
+<h4><a href="{{ url_for('new_job_posting', company_name=company_name)}}">Post a new job listing</a></h4>
+{% if is_admin %}
+<h2> Company Dashboard </h2><hr><br>
+<h3> Pending jobs </h3><hr>
+{% for job in jobs %}
+          <h4><u>Job title: {{ job.name }}</u></h4>
+            {% if job.time_elapsed()[0] == 'days' %}
+            <p>Posted {{ job.time_elapsed()[1] }} days ago</p>
+            {% elif job.time_elapsed()[0] == 'hours' %}
+            <p>Posted {{ job.time_elapsed()[1]}} hours ago</p>
+            {% elif job.time_elapsed()[0] == 'minutes' %}
+            <p>Posted {{ job.time_elapsed()[1] }} minutes ago</p>
+            {% endif %}
+          <p>Freelancer on the job:<br> {% if job.freelancer.username %}<a href="{{ url_for('user', username=job.freelancer.username)}}">
+            {{ job.freelancer.username }}</a>{% else %}no freelancer assigned yet. We will be reaching out.
+            If no freelancer has offered within 24 hours we will email you and be in contact. {% endif %}</p>
+          <p> Initial listing price: ${{ job.offer_price }}</p>
+          <p> Type of work: {{ job.job_type }}</p>
+          {% if job.equity_job %}
+          <p><b>Offering equity compensation</b></p>
+          {% endif %}
+          <p><a href="{{ url_for('delete_job', company_name=company_name, job=job)}}">Delete job</a></p>
+          <hr>
+{% endfor %}
+
+{% if no_jobs %}
+<h4> No job listings yet. Post a new job. </h4>
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}
