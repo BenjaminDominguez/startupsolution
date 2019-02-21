@@ -28,8 +28,8 @@ job_times_tup = tuple(zip(job_times, job_times))
 hours_a_week_tup = tuple(zip(hours_a_week, hours_a_week))
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    username = StringField('Username or email', validators=[DataRequired()], render_kw={"placeholder": "Enter your username or email"})
+    password = PasswordField('Password', validators=[DataRequired()], render_kw={'placeholder': 'Enter your password'})
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign in')
 

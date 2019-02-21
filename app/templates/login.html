@@ -3,17 +3,31 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
-    <h1>Login</h1>
-    <div class="row">
-        <div class="col-md-3">
-            {{ wtf.quick_form(form) }}
-        </div>
-    </div>
-
-    <br><br>
-
+<div class="form-group col-md-6">
+<h3>Login</h3>
+</div>
+<form class="form form-horizontal" method="post" role="form">
+  {{ form.hidden_tag() }}
+  {{ wtf.form_errors(form, hiddens="only") }}
+<div class="form-group col-md-6">
+  {{ wtf.form_field(form.username) }}
+  <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else unless you tell us to.</small>
+</div>
+<div class="form-group col-md-6">
+  {{ wtf.form_field(form.password, form_type='password') }}
+</div>
+<br>
+<div class="form-group col-md-6">
+<button type="submit" class="btn btn-outline-primary btn-sm">
+  {{ wtf.form_field(form.submit, form_type='submit')}}
+</button>
+</div>
+</form>
+<!--
 <h4> Or alternatively, </h4>
+
 <h4><a href="{{ url_for('login_with_github')}}"><img src='/static/github.png' width='275' height='55'></a></h4>
 <h4><a href="{{ url_for('login_with_linkedin') }}"><img src='/static/Signin-with-LinkedIn.png' width='275' height='55'></a></h4><br>
 <p>Not already a user? <a href="{{ url_for('start_registration') }}"> Register here!</a></p>
+-->
 {% endblock %}
