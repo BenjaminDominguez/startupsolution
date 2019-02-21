@@ -5,10 +5,15 @@ from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
 EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic, EditCompanyForm,\
-PostNewJobForm
+PostNewJobForm, DeleteJobForm, EditJobForm
 from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 from datetime import datetime
+
+# The before request decorator allows me to
+# run this function before any other view function.
+# This function simply checks if the current user is logged in
+# and if they are, set the last seen to utcnow()
 
 @app.before_request
 def before_request():
@@ -253,17 +258,52 @@ def new_job_posting(company_name):
 
 This is not working right now
 """
-@app.route('/company/<company_name>/<job>/delete_job')
-def delete_job(company_name, job):
-    job = Job.query.filter_by(name = job)
+@app.route('/company/<company_name>/<job_name>/delete_job')
+@login_required
+def delete_job(company_name, job_name):
     db.session.delete(job)
     db.session.commit()
     return redirect(url_for('company', company_name=company_name))
 
-# The before request decorator allows me to
-# run this function before any other view function.
-# This function simply checks if the current user is logged in
-# and if they are, set the last seen to utcnow()
+@app.route('/company/<company_name>/<job_name>/edit_job', methods=['GET', 'POST'])
+@login_required
+def edit_job_details(company_name, job_name):
+    deleteform = DeleteJobForm()
+    editform = EditJobForm()
+    job = Job.query.filter_by(name = job_name).first_or_404()
+    admin = Startup.query.filter_by(company_name=company_name).first_or_404().admin
+    if admin.username is not current_user.username:
+        abort(404)
+    if deleteform.validate_on_submit():
+        if (deleteform.username.data == admin.username)\
+         and (admin.check_password(deleteform.password.data)):
+            db.session.delete(job)
+            db.session.commit()
+            flash("Job '{0}' deleted".format(job.name))
+            return redirect(url_for('company', company_name=company_name))
+        else:
+            flash('Password or username incorrect.')
+            return redirect(url_for('edit_job_details', company_name=company_name, job_name=job_name))
+    if editform.validate_on_submit():
+        job.name = editform.name.data
+        job.job_description = editform.job_description.data
+        job.offer_price = editform.offer_price.data
+        job.job_type = editform.job_type.data
+        job.estimated_developement_time = editform.estimated_developement_time.data
+        job.equity_job = editform.equity_job.data
+        db.session.commit()
+        flash("Changes saved.")
+        return redirect(url_for('edit_job_details', company_name=company_name, job_name=job_name))
+    if request.method == 'GET':
+        editform.name.data = job.name
+        editform.job_description.data = job.job_description
+        editform.offer_price.data = job.offer_price
+        editform.job_type.data = job.job_type
+        editform.estimated_developement_time.data = job.estimated_developement_time
+        editform.equity_job.data = job.equity_job
+    return render_template('company/edit_job_form.html', title='Edit Job Details', editform=editform, deleteform=deleteform)
+
+
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():

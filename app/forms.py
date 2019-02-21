@@ -102,7 +102,10 @@ class UploadProfilePic(FlaskForm):
     submit = SubmitField('Submit')
 
 class EditCompanyForm(FlaskForm):
-    description = TextAreaField('Change company description', validators=[DataRequired()])
+    description = TextAreaField('Change company description')
+    company_type = SelectField("Revise company type", choices=company_types_tup, validators=[DataRequired()])
+    taxID = StringField("Revise Tax ID (if US)", validators=[DataRequired()])
+    logo = FileField("Upload a new company logo/profile pic", validators=[DataRequired()])
     submit = SubmitField('Submit changes')
 
 class PostNewJobForm(FlaskForm):
@@ -113,3 +116,17 @@ class PostNewJobForm(FlaskForm):
     estimated_developement_time = SelectField('Expected completion time', choices=job_times_tup, validators=[DataRequired()])
     equity_job = BooleanField('Work for equity job (Select if you are willing to offer some form of equity as compensation)')
     submit = SubmitField('Submit job listing!')
+
+class EditJobForm(FlaskForm):
+    name = TextAreaField('Revise the job title')
+    job_description = TextAreaField('Revise the job description')
+    offer_price = StringField('Revise the initial listing price (in US dollars)')
+    job_type = SelectField('Revise the type of work', choices=job_types_tup)
+    estimated_developement_time = SelectField('Revise the expected completion time', choices=job_times_tup)
+    equity_job = BooleanField("Work for equity job (Select if you are willing to offer some form of equity as compensation)")
+    submit = SubmitField('Save changes')
+
+class DeleteJobForm(FlaskForm):
+    username = StringField('Enter username', validators=[DataRequired()])
+    password = PasswordField('Enter password', validators=[DataRequired()])
+    submit = SubmitField('Delete job')

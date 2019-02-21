@@ -90,14 +90,18 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), index=True)
     hours_a_week = db.Column(db.String(64))
     occupation = db.Column(db.String(64), index=True, default='Developer')
-    # one to one relationship between user and startup
-    startup = db.relationship('Startup', backref='admin', lazy='dynamic')
-    # one to many relationship between user and jobs
-    jobs = db.relationship('Job', backref='freelancer', lazy='dynamic')
     social_id = db.Column(db.String(64), nullable=True) #nullable?
     about_me = db.Column(db.String(1000))
     avatar_data = db.Column(db.String(400))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    # one to one relationship between user and startup
+    startup = db.relationship('Startup', backref='admin', lazy='dynamic')
+    # one to many relationship between user and jobs
+    jobs = db.relationship('Job', backref='freelancer', lazy='dynamic')
+    #one to many relationship between user and pastemployments
+    resume = db.relationship('PastEmployments', backref='freelancer', lazy='dynamic')
+    #one to many relationship between user and reviews
+    reviews = db.relationship('Reviews', backref='freelancer', lazy='dynamic')
 
     def avatar(self, size):
         """
@@ -152,6 +156,12 @@ class User(UserMixin, db.Model):
     def delete_startup(self, startup):
         pass # not sure if I should add this functionality yet, does not make sense.
 
+    def add_to_my_resume(self, past_employment):
+        self.resume.append(past_employment)
+
+    def remove_off_my_resume(self, past_employment):
+        self.resume.remove(past_employment)
+
     def info(self):
         if self.role == 'Employer':
             return '<Employer {0}>'.format(self.username)
@@ -183,7 +193,10 @@ class Startup(UserMixin, db.Model):
     description = db.Column(db.String(1000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     logo_data = db.Column(db.String(400))
+    #one to many relationship between startups and jobs
     jobs = db.relationship('Job', backref='company', lazy='dynamic')
+    #one to many relationship between startups and reviews
+    reviews = db.relationship('Reviews', backref='company', lazy='dynamic')
 
     def logo(self, size):
         """
@@ -236,6 +249,9 @@ class Startup(UserMixin, db.Model):
     def set_founded_date(self, year, month, day):
         self.founded_date = datetime(year, month, day)
 
+    def write_review(self, review):
+        self.reviews.append(review)
+
     def info(self):
         return "<Startup {0}>".format(self.company_name)
 
@@ -270,8 +286,41 @@ class Job(db.Model):
             return ('hours', int(round(hours)))
         elif hours < 1:
             return ('minutes', int(round(time.seconds/60, 0)))
+        elif hours < 1 and time.seconds/60 < 1:
+            return ('just now', 'just now')
 
     def info(self):
         return '<Job {0}>'.format(self.name)
+
+    __repr__ = info
+
+class Reviews(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    stars = db.Column(db.Integer, index=True)
+    description = db.Column(db.String(1000))
+    time_written = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    startup_id = db.Column(db.Integer, db.ForeignKey('startup.id'))
+
+    def info(self):
+        return 'Review by {0} for {1}, {2} stars'.format(
+        'company', 'freelancer', self.stars
+        )
+
+    __repr__ = info
+
+class PastEmployments(db.Model):
+    #table name is past_employments
+    id = db.Column(db.Integer, primary_key=True)
+    job_description = db.Column(db.String(100))
+    company_worked_for = db.Column(db.String(64), index=True)
+    timeframe = db.Column(db.DateTime)
+    location = db.Column(db.String(100))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def info(self):
+        return 'Past employment working for {0}'.format(
+        'company_worked_for'
+        )
 
     __repr__ = info

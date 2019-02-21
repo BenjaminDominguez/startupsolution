@@ -19,7 +19,7 @@
 <h4><a href="{{ url_for('company_edit_profile', company_name=company_name)}}">Edit Profile</a></h4>
 <h4><a href="{{ url_for('new_job_posting', company_name=company_name)}}">Post a new job listing</a></h4>
 {% if is_admin %}
-<h2> Company Dashboard </h2><hr><br>
+<h2> Company Dashboard </h2><hr>
 <h3> Pending jobs </h3><hr>
 {% for job in jobs %}
           <h4><u>Job title: {{ job.name }}</u></h4>
@@ -29,6 +29,8 @@
             <p>Posted {{ job.time_elapsed()[1]}} hours ago</p>
             {% elif job.time_elapsed()[0] == 'minutes' %}
             <p>Posted {{ job.time_elapsed()[1] }} minutes ago</p>
+            {% elif job.time_elapse()[0] == 'just now' %}
+            <p>Posted just now</p>
             {% endif %}
           <p>Freelancer on the job:<br> {% if job.freelancer.username %}<a href="{{ url_for('user', username=job.freelancer.username)}}">
             {{ job.freelancer.username }}</a>{% else %}no freelancer assigned yet. We will be reaching out.
@@ -38,7 +40,7 @@
           {% if job.equity_job %}
           <p><b>Offering equity compensation</b></p>
           {% endif %}
-          <p><a href="{{ url_for('delete_job', company_name=company_name, job=job)}}">Delete job</a></p>
+          <p><a href="{{ url_for('edit_job_details', company_name=company_name, job_name=job.name)}}">edit job</a></p>
           <hr>
 {% endfor %}
 
