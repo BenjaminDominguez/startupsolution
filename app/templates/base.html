@@ -1,34 +1,89 @@
-{% extends "bootstrap/base.html" %}
-
-{% block title %}
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- import bootstrap css -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>
     {% if title %}
-          {{ title }}
+      {{ title }}
     {% else %}
-          Welcome to StartupSolution
+      Startup Solution
     {% endif %}
-{% endblock %}
+  </title>
+
 
 {% block navbar %}
-  <nav class="navbar navbar-default">
-    <p>  PartnerUp - {{ current_user.username }} </p>
-<a href="{{ url_for('index') }}">Home</a>
-{% if current_user.is_anonymous %}
-<a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-<a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
-<a href="{{ url_for('jobs_available') }}">Jobs available</a>
-<a href="{{ url_for('freelancers_available' )}}">Freelancers available for hire</a>
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand" href="{{ url_for('index') }}">
+  <!--<img src="static/database_files/Logo.png" width="30" height="30" class="d-inline-block align-top" alt="">-->
+    Startup Solution</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
+      </li>
+<!-- if the current user is not logged in, show them the login tab, else, show them the logout tab -->
+      {% if current_user.is_anonymous %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+      </li>
+      {% endif %}
+<!----------------------------------------------------------->
 {% if current_user.is_authenticated %}
-{% if current_user.role == "Freelancer" %}
-<a href="{{ url_for('user', username=current_user.username) }}">User dashboard</a>
-{% elif current_user.role == "Employer" %}
-<a href="{{ url_for('company', company_name=current_user.startup[0].company_name)}}">Company dashboard</a>
+{% if current_user.role == "Employer" %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Employer dashboard
+        </a>
+        {% with company_name = current_user.startup[0].company_name %}
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{{url_for('company', company_name=company_name)}}">Employer page</a>
+          <a class="dropdown-item" href="{{url_for('new_job_posting', company_name=company_name)}}">Post a new job</a>
+          <a class='dropdown-item' href="#">Manage current jobs</a>
+        {% endwith %}
+      </div>
+      </li>
+{% elif current_user.role == "Freelancer" %}
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Freelancer dashboard
+  </a>
+  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+    <a class="dropdown-item" href="{{ url_for('user', username=current_user.username) }}">Profile page</a>
+    <a class="dropdown-item" href="{{ url_for('jobs_available')}}">Browse jobs available</a>
+    <a class='dropdown-item' href="{{ url_for('user', username=current_user.username)}}">Manage current jobs</a>
+</div>
+</li>
 {% endif %}
 {% endif %}
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('freelancers_available')}}">Freelancers available</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('jobs_available')}}">Jobs available</a>
+</li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
 </nav>
 {% endblock %}
-
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 {% block content %}
 <div class="container">
@@ -39,8 +94,7 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-
-
-    {% block app_content %}{% endblock %}
 </div>
+<!-- adding javascript from bootstrap, needs to be added at the end of the page -->
+
 {% endblock %}
