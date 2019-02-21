@@ -40,7 +40,6 @@ def logout():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        flash('Successfully logged in as a startup/freelancer!')
         return redirect(url_for('index'))
     form = LoginForm()
     #post request
@@ -144,13 +143,30 @@ def freelancer_registration():
         return redirect(url_for('login'))
     return render_template('registration/freelancer_registration.html', title='Register!', form=form)
 
-@app.route('/freelancers/available')
+@app.route('/freelancers_available')
 def freelancers_available():
-    return render_template("dashboards/freelancers_available.html", u=User)
+    page = request.args.get('page', 1, type=int)
+    most_recently_active = User.query.filter_by(role="Freelancer").\
+    order_by(User.last_seen.desc()).paginate(page,\
+    app.config['FREELANCERS_PER_PAGE'], False)
+    next_url = (url_for('freelancers_available', page=most_recently_active.next_num)\
+    if most_recently_active.has_next else None)
+    prev_url = (url_for('freelancers_available', page=most_recently_active.prev_num)\
+    if most_recently_active.has_prev else None)
+    return render_template("dashboards/freelancers_available.html",\
+    freelancers = most_recently_active.items,\
+    next_url=next_url, prev_url=prev_url)
 
-@app.route('/employers/jobs')
+@app.route('/jobs')
 def jobs_available():
-    return render_template("dashboards/jobs_available.html", title='Jobs available', j=Job)
+    page = request.args.get('page', 1, type=int)
+    jobs = Job.query.order_by(Job.posted_on.desc()).paginate(
+    page, app.config['JOBS_PER_EXPLORE_PAGE'], False
+    )
+    next_url = (url_for('jobs_available', page=jobs.next_num) if jobs.has_next else None)
+    prev_url = (url_for('jobs_available', page=jobs.prev_num) if jobs.has_prev else None)
+    return render_template("dashboards/jobs_available.html", title='Jobs available',\
+    jobs=jobs.items, next_url=next_url, prev_url=prev_url)
 
 @app.route('/user/<username>')
 @login_required

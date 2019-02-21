@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 {% block app_content %}
-{% with p = j.query.all() %}
-  <h1> Job's currently available </h1>
-  {% for job in p %}
+  <h3> Job's currently available </h3>
+  {% for job in jobs %}
     <b><p>{{ job.name }}</p></b>
     <p> Posted by {{ job.company.company_name }}</p>
   {% endfor %}
-{% endwith %}
 
+  <nav aria-label="...">
+       <ul class="pager">
+           <li class="previous{% if not prev_url %} disabled{% endif %}">
+               <a href="{{ prev_url or '#' }}">
+                   <span aria-hidden="true">&larr;</span> Newer Listings
+               </a>
+           </li>
+           <li class="next{% if not next_url %} disabled{% endif %}">
+               <a href="{{ next_url or '#' }}">
+                   Older Listings <span aria-hidden="true">&rarr;</span>
+               </a>
+           </li>
+       </ul>
+   </nav>
 {% endblock %}

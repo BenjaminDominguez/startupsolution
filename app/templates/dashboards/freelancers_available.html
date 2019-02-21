@@ -1,21 +1,44 @@
 {% extends "base.html" %}
 {% block app_content %}
-{% with f = u.query.filter_by(role='Freelancer') %}
-  <h1> Freelancer's available for hire </h1>
-  {% for freelancer in f %}
-  <table>
-    <tr valign="top">
-      {% if freelancer.avatar_data %}
-      <td><img src="{{ freelancer.make_avatar_url() }}">
-      {% else %}
-      <td><img src="{{ freelancer.avatar(32) }}"></td>
-      {% endif %}
-      <td><a href="{{url_for('user', username=freelancer.username)}}">{{ freelancer.username }}</a>, {{freelancer.occupation}}</td>
-    </tr>
+  <h3> Most recently active freelancers </h3>
+  {% for freelancer in freelancers %}
+  <table class="table table-hover">
+      <tr>
+          <td width="70px">
+            <h4><a href="{{url_for('user', username=freelancer.username)}}"></h4>
+                {% if freelancer.avatar_data %}
+                  <img src="{{freelancer.make_avatar_url() }}" height=64/>
+                {% else %}
+                <img src="{{ freelancer.avatar(64) }}"/>
+                {% endif %}
+
+          </td>
+          <td>
+              <a href="{{ url_for('user', username=freelancer.username) }}">
+                  {{ freelancer.username }}
+              </a>
+              <br>
+              {{ freelancer.occupation }}
+              <br>
+              {{ freelancer.about_me }}
+              <br>
+              Last seen on: {{ freelancer.last_seen.month }}/{{ freelancer.last_seen.day }}/{{ freelancer.last_seen.year }}
+          </td>
+      </tr>
   </table>
-  <br>
   {% endfor %}
-{% endwith %}
-
-
+  <nav aria-label="...">
+       <ul class="pager">
+           <li class="previous{% if not prev_url %} disabled{% endif %}">
+               <a href="{{ prev_url or '#' }}">
+                   <span aria-hidden="true">&larr;</span> More recently active
+               </a>
+           </li>
+           <li class="next{% if not next_url %} disabled{% endif %}">
+               <a href="{{ next_url or '#' }}">
+                  Less recently active <span aria-hidden="true">&rarr;</span>
+               </a>
+           </li>
+       </ul>
+   </nav>
 {% endblock %}

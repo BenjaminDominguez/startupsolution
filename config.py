@@ -7,6 +7,8 @@ class Config(object):
     'sqlite:///' + os.path.join(base_directory, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/app/static/database_files'
+    JOBS_PER_EXPLORE_PAGE = 10
+    FREELANCERS_PER_PAGE = 10
     OAUTH_CREDENTIALS = {
     'linkedin': {
         'id': '470154729788964',
