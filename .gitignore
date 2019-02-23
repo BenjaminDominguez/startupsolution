@@ -6,3 +6,4 @@ migrations
 *.db
 app/static
 static
+logs
