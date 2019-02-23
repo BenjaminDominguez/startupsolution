@@ -91,10 +91,15 @@ class EditProfileForm(FlaskForm):
     about_me = TextAreaField('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.', validators=[Length(min=0, max=1000)])
     submit = SubmitField('Submit')
 
+    def __init__(self, original_username, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.original_username = original_username
+
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user is not None and user.username != username.data:
-            raise ValidationError('Username taken. Please select a different one.')
+        if username.data != self.original_username:
+            user = User.query.filter_by(username=self.username.data).first()
+            if user is not None:
+                raise ValidationError('Username already taken. Please use a different one.')
 
 class UploadProfilePic(FlaskForm):
     profile_pic = FileField('Profile Pic', validators=\

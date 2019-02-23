@@ -2,10 +2,12 @@
 
 {% block content %}
 {% if user.avatar_data %}
+<div class="container">
+<div class="row"><br></div>
 <table>
   <tr valign="top">
     <td><img src="{{ avatar_url }}" width=100 height=100></td>
-    <td><h4>{{ user.username }}</h4>
+    <td><h4>{{ user.first }} {{ user.last }}</h4>
       {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
       {% if user.last_seen %}<p>Last seen on: {{ user.last_seen.month }}/{{user.last_seen.day }}/{{user.last_seen.year }}</p>{% endif %}
     </td>
@@ -22,26 +24,29 @@
   </tr>
 </table>
 {% endif %}
+<div class="row"><br></div>
 {% if current_user == user %}
 {% if not profile_pic %}
 <a href="{{ url_for('upload_profile_pic') }}">Upload a profile pic</a>
 <br>
 {% endif %}
-<a href="{{ url_for('edit_profile') }}"> Edit Profile</a>
-
-<h4> Your current pending jobs </h4><hr>
-{% for job in jobs %}
-          <p>Job title: {{ job.name }}</p>
-          <p>Startup: {{ job.company.company_name }}</p>
-          <hr>
-{% endfor %}
-
-{% if no_jobs %}
-<p>No jobs assigned yet!
-  Look for some here: <a href="{{ url_for('jobs_available')}}">Jobs Available</a>
-</p>
 {% endif %}
-{% else %}
-<p>Message user</p>
-{% endif %}
+<ul class="nav nav-pills">
+  <li class="nav item">
+    <a class="nav-link {% if home_active %}active{% endif %}" href= "{{ url_for('user', username=user.username)}}">User home</a>
+  </li>
+  <li class="nav item">
+    <a class="nav-link {% if current_jobs_active %}active{% endif %}" href= "{{ url_for('current_jobs', username=user.username)}}">Current Jobs</a>
+  </li>
+  <li class="nav item">
+    <a class="nav-link {% if messages_active %}active{% endif %}" href="#">Messages </a>
+  </li>
+  <li class="nav item">
+    <a class="nav-link {% if edit_active %}active{% endif %}" href="{{ url_for('edit_profile', username=current_user.username) }}">Edit profile</a>
+  </li>
+</ul>
+<br>
+{% block usercontent %}
+{% endblock %}
+</div>
 {% endblock %}

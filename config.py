@@ -8,7 +8,14 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/app/static/database_files'
     JOBS_PER_EXPLORE_PAGE = 10
-    FREELANCERS_PER_PAGE = 10
+    FREELANCERS_PER_PAGE = 9
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    ERROR_ADMINS = ['startupsolution.appfailure@gmail.com']
+    SEND_ADMINS = ['bendominguez011@gmail.com', 'startupsolution.appfailure@gmail.com']
     OAUTH_CREDENTIALS = {
     'linkedin': {
         'id': '470154729788964',

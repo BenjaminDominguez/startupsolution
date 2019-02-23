@@ -102,6 +102,8 @@ class User(UserMixin, db.Model):
     resume = db.relationship('PastEmployments', backref='freelancer', lazy='dynamic')
     #one to many relationship between user and reviews
     reviews = db.relationship('Reviews', backref='freelancer', lazy='dynamic')
+    #one to many relationship between user and skills
+    skills = db.relationship('Skills', backref='freelancer', lazy='dynamic')
 
     def avatar(self, size):
         """
@@ -161,6 +163,23 @@ class User(UserMixin, db.Model):
 
     def remove_off_my_resume(self, past_employment):
         self.resume.remove(past_employment)
+
+    def last_seen_formatted(self):
+        delta = datetime.utcnow() - self.last_seen
+        if delta.seconds < 86400: #24 hours
+            if delta.seconds < 3600: # 1 hour
+                if delta.seconds < 60:
+                    return 'online'
+                return ('minutes', int(round(delta.seconds/60)))
+            return ('hours', int(round(delta.seconds/3600)))
+        return ('days', delta.days)
+
+    def last_seen_string(self):
+        x = self.last_seen_formatted()
+        if x[0] is 'online':
+            return "Online"
+        else:
+            return 'Last seen {0} {1} ago'.format(x[1], x[0])
 
     def info(self):
         if self.role == 'Employer':
@@ -308,6 +327,21 @@ class Reviews(db.Model):
         )
 
     __repr__ = info
+
+class Skills(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    primary_skill = db.Column(db.String(100), index=True)
+    skill2 = db.Column(db.String(100), index=True)
+    skill3 = db.Column(db.String(100), index=True)
+    skill4 = db.Column(db.String(100), index=True)
+    skill5 = db.Column(db.String(100), index=True)
+    skill6 = db.Column(db.String(100), index=True)
+    skill7 = db.Column(db.String(100), index=True)
+    skill8 = db.Column(db.String(100), index=True)
+    skill9 = db.Column(db.String(100), index=True)
+    skill10 = db.Column(db.String(100), index=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class PastEmployments(db.Model):
     #table name is past_employments

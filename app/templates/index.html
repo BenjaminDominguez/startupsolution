@@ -1,23 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-
-<img src="/static/logo.png" width='444' height='150'>
-
-</div>
-{% if current_user.is_authenticated %}
-  <h3>Hello, {{ current_user.username }}! </h3>
+<div class="jumbotron">
+  <h1 class="display-4">Welcome to Freeline.</h1>
+  {% if current_user.is_authenticated %}
   {% if current_user.role == "Employer" %}
-  <p>You're an {{ current_user.role.lower() }} looking for freelancers and possibly future business partners.</p>
-  <p>Look for freelancers <a href="{{ url_for('freelancers_available')}}"">here</a></p>
+  <p class="lead">You're an {{ current_user.role.lower() }} looking for freelancers and possibly future business partners.</p>
+    <hr class="my-4">
+  <p> Click the button below to get started.</p>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('freelancers_available')}}" role="button">Available freelancers.</a>
   {% elif current_user.role == "Freelancer" %}
-  <p>You're a frelancer looking for work and maybe some stake in a fresh startup!<p>
-  <p>Look for jobs <a href="{{ url_for('jobs_available')}}">here</a></p>
+  <p class="lead">You're a frelancer looking for work and maybe some stake in a fresh startup.</p>
+    <hr class="my-4">
+  <p> Click the button below to get started.</p>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('jobs_available')}}" role="button">Available jobs</a>
   {% endif %}
-{% else %}
-<h3> Welcome to StartupSolution!</h3>
-<p>If you're an existing user, <a href="{{ url_for('login') }}">login here to continue.</a>
-  If not, <a href="{{ url_for('start_registration') }}">register here to get started</a>
+  {% else %}
+  <p class="lead">Login if you have an account to continue making progress.</p>
+    <hr class="my-4">
+  <p> IF you haven't made an account yet, click the button below to get started.</p>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('start_registration')}}" role="button">Register</a>
+</div>
 
 {% endif %}
 {% endblock %}

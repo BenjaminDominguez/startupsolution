@@ -1,0 +1,62 @@
+2019-02-22 19:04:38,686 ERROR: Exception on /user/benfreelancer/edit_profile [POST] [in c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py:1761]
+Traceback (most recent call last):
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\_compat.py", line 35, in reraise
+    raise value
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\bmd16\Desktop\Programming\Web\PartnerUp\app\routes.py", line 193, in edit_profile
+    if form.validate_on_submit():
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask_wtf\form.py", line 101, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\form.py", line 310, in validate
+    return super(Form, self).validate(extra)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\form.py", line 152, in validate
+    if not field.validate(self, extra):
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\fields\core.py", line 206, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\fields\core.py", line 226, in _run_validation_chain
+    validator(form, self)
+  File "C:\Users\bmd16\Desktop\Programming\Web\PartnerUp\app\forms.py", line 100, in validate_username
+    user = User.query.filer_by(username=self.username.data).first()
+AttributeError: 'BaseQuery' object has no attribute 'filer_by'
+2019-02-22 19:07:14,908 ERROR: Exception on /user/benfreelancer/edit_profile [POST] [in c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py:1761]
+Traceback (most recent call last):
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\_compat.py", line 35, in reraise
+    raise value
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask\app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask_login\utils.py", line 261, in decorated_view
+    return func(*args, **kwargs)
+  File "C:\Users\bmd16\Desktop\Programming\Web\PartnerUp\app\routes.py", line 193, in edit_profile
+    if form.validate_on_submit():
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\flask_wtf\form.py", line 101, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\form.py", line 310, in validate
+    return super(Form, self).validate(extra)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\form.py", line 152, in validate
+    if not field.validate(self, extra):
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\fields\core.py", line 206, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "c:\users\bmd16\desktop\programming\web\partnerup\venv\lib\site-packages\wtforms\fields\core.py", line 226, in _run_validation_chain
+    validator(form, self)
+  File "C:\Users\bmd16\Desktop\Programming\Web\PartnerUp\app\forms.py", line 100, in validate_username
+    user = User.query.filer_by(username=self.username.data).first()
+AttributeError: 'BaseQuery' object has no attribute 'filer_by'

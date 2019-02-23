@@ -1,7 +1,7 @@
 from app import app, db
 import os
 from app.models import Startup, Job, User
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import render_template, flash, redirect, url_for, request, abort, session
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
 EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic, EditCompanyForm,\
@@ -172,17 +172,45 @@ def jobs_available():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    if user.role == "Employer":
-        abort(404)
     jobs = [job for job in user.jobs]
     #set outside of the conditional because need to use profile_pic as a variable later
     profile_pic = user.avatar_data is not None
     if profile_pic:
         url = user.avatar_data.split('/')
         avatar_url = "/{0}/{1}".format(url[-2], url[-1])
+        session['avatar_url'] = avatar_url
+        session['profile_pic'] = True
     else:
         avatar_url = None
-    return render_template('/user/user.html', user=user, jobs=jobs, no_jobs=bool(len(jobs) == 0), profile_pic=profile_pic, avatar_url=avatar_url)
+    return render_template('user/user_profile.html', user=user, jobs=jobs, no_jobs=bool(len(jobs) == 0),\
+    profile_pic=profile_pic, avatar_url=avatar_url, home_active=True)
+
+@app.route('/user/<username>/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    form = EditProfileForm(username)
+    if form.validate_on_submit():
+        #check if username already exists
+        current_user.username = form.username.data
+        username = form.username.data
+        current_user.about_me = form.about_me.data
+        db.session.commit()
+        flash("Your changes have been saved!")
+        return redirect(url_for('edit_profile', username=username))
+    elif request.method == "GET":
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+    return render_template('user/edit_profile.html', title='Edit Profile', form=form, user=user, avatar_url=session.get('avatar_url'), edit_active=True,\
+    profile_pic=session.get('profile_pic'))
+
+@app.route('/user/<username>/current_jobs')
+@login_required
+def current_jobs(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    jobs = [job for job in user.jobs]
+    return render_template('user/current_jobs.html', username=username, profile_pic=session.get('profile_pic'),\
+    current_jobs_active=True, user=user, avatar_url=session.get('avatar_url'), jobs=jobs)
 
 @app.route('/company/<company_name>', methods=['GET', 'POST'])
 @login_required
@@ -190,9 +218,7 @@ def company(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
     # for now, but I have to see how competitors treat this
     form = PostNewJobForm()
-    if current_user.role == 'Freelancer':
-        abort(404)
-    is_admin = (current_user.startup[0] == company)
+    is_admin = (current_user.startup.first() == company)
     if is_admin:
         jobs = company.jobs
         no_jobs = (len([job for job in jobs]) == 0)
@@ -234,7 +260,7 @@ def company(company_name):
 @login_required
 def company_edit_profile(company_name):
     company = Startup.query.filter_by(company_name = company_name).first_or_404()
-    if current_user.startup[0] != company:
+    if current_user.startup.first() != company:
         abort(404)
     form = EditCompanyForm()
     if form.validate_on_submit():
@@ -248,7 +274,7 @@ def company_edit_profile(company_name):
 @app.route('/company/<company_name>/new_job_posting', methods=['GET', 'POST'])
 def new_job_posting(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
-    is_admin = (current_user.startup[0] == company)
+    is_admin = (current_user.startup.first() == company)
     if not current_user.is_authenticated or not is_admin:
         abort(404)
     form = PostNewJobForm()
@@ -320,22 +346,6 @@ def edit_job_details(company_name, job_name):
     return render_template('company/edit_job_form.html', title='Edit Job Details', editform=editform, deleteform=deleteform)
 
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
-@login_required
-def edit_profile():
-    form = EditProfileForm()
-    if form.validate_on_submit():
-        #check if username already exists
-        current_user.username = form.username.data
-        current_user.about_me = form.about_me.data
-        db.session.commit()
-        flash("Your changes have been saved!")
-        return redirect(url_for('edit_profile'))
-    elif request.method == "GET":
-        form.username.data = current_user.username
-        form.about_me.data = current_user.about_me
-    return render_template('user/edit_profile.html', title='Edit Profile', form=form)
-
 @app.route('/upload_profile_pic', methods=['GET', 'POST'])
 @login_required
 def upload_profile_pic():
@@ -349,6 +359,10 @@ def upload_profile_pic():
         db.session.commit()
         return redirect(url_for('user', username=current_user.username))
     return render_template('user/upload_profile_pic.html', title='Upload Profile Pic', form=form)
+
+@app.route('/aboutus')
+def about_us():
+    return render_template('about_us.html')
 
 @app.route('/post_job', methods=['GET', 'POST'])
 @login_required

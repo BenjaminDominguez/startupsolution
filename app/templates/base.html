@@ -6,11 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <!-- import bootstrap css -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-social.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css" integrity="sha384-r/k8YTFqmlOaqRkZuSiE9trsrDXkh07mRaoGBMoDcmA58OHILZPsk29i2BsFng1B" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/regular.css" integrity="sha384-IG162Tfx2WTn//TRUi9ahZHsz47lNKzYOp0b6Vv8qltVlPkub2yj9TVwzNck6GEF" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.12.0/bootstrap-social.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/brands.css" integrity="sha384-BKw0P+CQz9xmby+uplDwp82Py8x1xtYPK3ORn/ZSoe6Dk3ETP59WCDnX+fI1XCKK" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" integrity="sha384-4aon80D8rXCGx9ayDt85LbyUHeMWd3UiBaWliBlJ53yzm9hqN21A+o1pqoyK04h+" crossorigin="anonymous">
   <title>
     {% if title %}
       {{ title }}
@@ -21,10 +18,10 @@
 
 
 {% block navbar %}
-<nav class="navbar sticky-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #1E90FF;">
   <a class="navbar-brand" href="{{ url_for('index') }}">
   <!--<img src="static/database_files/Logo.png" width="30" height="30" class="d-inline-block align-top" alt="">-->
-    Startup Solution</a>
+    Freeline</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -49,7 +46,7 @@
 {% if current_user.role == "Employer" %}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Employer dashboard
+          Dashboard
         </a>
         {% with company_name = current_user.startup[0].company_name %}
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -62,12 +59,12 @@
 {% elif current_user.role == "Freelancer" %}
 <li class="nav-item dropdown">
   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Freelancer dashboard
+    Dashboard
   </a>
   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
     <a class="dropdown-item" href="{{ url_for('user', username=current_user.username) }}">Profile page</a>
     <a class="dropdown-item" href="{{ url_for('jobs_available')}}">Browse jobs available</a>
-    <a class='dropdown-item' href="{{ url_for('user', username=current_user.username)}}">Manage current jobs</a>
+    <a class='dropdown-item' href="{{ url_for('current_jobs', username=current_user.username)}}">Manage current jobs</a>
 </div>
 </li>
 {% endif %}
@@ -77,6 +74,9 @@
 </li>
 <li class="nav-item">
   <a class="nav-link" href="{{ url_for('jobs_available')}}">Jobs available</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{{ url_for('about_us')}}">About us</a>
 </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">
@@ -89,17 +89,27 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-{% block content %}
 <div class="container">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-info" role="alert">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
+  <div class="container">
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row"><br></div>
+<div class="row">
+    {% for message in messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+  <p> {{ message }} </p>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
+</div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+</div>
+{% block content %}
+
 <!-- adding javascript from bootstrap, needs to be added at the end of the page -->
 
 {% endblock %}
+</div>

@@ -1,0 +1,10 @@
+{% extends "user.html" %}
+{% block usercontent %}
+<div class="container">
+{% for job in jobs %}
+<div class="row">
+  <h1>{{ job.name}}
+</div>
+{% endfor %}
+</div>
+{% endblock %}
