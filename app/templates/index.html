@@ -1,23 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="jumbotron">
-  <h1 class="display-4">Welcome to Freeline.</h1>
+{% if current_user.is_authenticated %}
+{% if current_user.admin() %}
+<div class="container">
+  <div class="row"><br></div>
+  <div class="container">
+  <div class="row"><h3>Admin Privelages</h3></div>
+  </div>
+<div class="row"><br></div>
+<ul class="list-group">
+<a href="{{ url_for('company_info') }}" class="list-group-item list-group-item-action">Company information</a>
+<a href="{{ url_for('freelancer_info') }}" class="list-group-item list-group-item-action">Freelancer information</a>
+<a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action">Logout</a>
+</ul>
+</div>
+{% endif %}
+{% endif %}
+
+
   {% if current_user.is_authenticated %}
-  {% if current_user.role == "Employer" %}
-  <p class="lead">You're an {{ current_user.role.lower() }} looking for freelancers and possibly future business partners.</p>
+  {% if current_user.employer() %}
+  <div class="jumbotron">
+    <h1 class="display-4">Welcome to Freeline.</h1>
+  <p class="lead">You're an {{ current_user.roles[0].name.lower() }} looking for freelancers and possibly future business partners.</p>
     <hr class="my-4">
   <p> Click the button below to get started.</p>
   <a class="btn btn-primary btn-lg" href="{{ url_for('freelancers_available')}}" role="button">Available freelancers.</a>
-  {% elif current_user.role == "Freelancer" %}
+  {% elif current_user.freelancer() %}
+  <div class="jumbotron">
+    <h1 class="display-4">Welcome to Freeline.</h1>
   <p class="lead">You're a frelancer looking for work and maybe some stake in a fresh startup.</p>
     <hr class="my-4">
   <p> Click the button below to get started.</p>
   <a class="btn btn-primary btn-lg" href="{{ url_for('jobs_available')}}" role="button">Available jobs</a>
   {% endif %}
   {% else %}
+  <div class="jumbotron">
+    <h1 class="display-4">Welcome to Freeline.</h1>
   <p class="lead">Login if you have an account to continue making progress.</p>
     <hr class="my-4">
-  <p> IF you haven't made an account yet, click the button below to get started.</p>
+  <p> If you haven't made an account yet, click the button below to get started.</p>
   <a class="btn btn-primary btn-lg" href="{{ url_for('start_registration')}}" role="button">Register</a>
 </div>
 

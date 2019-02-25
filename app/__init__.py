@@ -1,10 +1,13 @@
-from flask import Flask
+from flask import Flask, request
 from config import Config, base_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+from flask_babel import Babel
+from flask_babel import lazy_gettext as _l
 from flask_mail import Mail
+from flask_user import UserManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
@@ -13,12 +16,18 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-login = LoginManager(app)
+login = LoginManager()
 login.init_app(app)
 login.login_view = 'login'
 login.session_protection = "strong"
+login.login_message = _l("Please log in to access this page")
 mail = Mail(app)
 bootstrap = Bootstrap(app)
+babel = Babel(app)
+
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 app.debug = True
 
@@ -60,3 +69,6 @@ if not app.debug:
 
 
 from app import routes, models, errors
+from app.models import Role, User
+
+user_manager = UserManager(app, db, User)

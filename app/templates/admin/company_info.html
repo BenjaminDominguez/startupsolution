@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+<div class="row"><br></div>
+<div class="row"><h3>Company information</h3></div>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Primary Key #</th>
+      <th scope="col">Username (admin)</th>
+      <th scope="col">Company Name</th>
+      <th scope="col"># of Current Jobs</th>
+      <th scope="col">Date and Time joined</th>
+      <th scope="col">Company Type</th>
+      <th scope="col">State of incorporation</th>
+      <th scope="col">Website</th>
+    </tr>
+    </thead>
+      <tbody>
+        {% for company in companies %}
+        <tr>
+        <th scope="row">{{ company.id }}</th>
+        <td> {{company.admin.username }}</td>
+        <td> {{ company.company_name }} </td>
+        <td> {{ company.jobs.count() }} </td>
+        <td> {{ company.admin.registration_date }}</td>
+        <td> {{ company.company_type }} </td>
+        <td> {{ company.state_of_incorporation }}</td>
+        <td><a href="{{ company.website }}"> {{ company.website}}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+</table>
+</div>
+{% endblock content %}

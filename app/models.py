@@ -2,11 +2,12 @@ from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 genhash, checkhash = generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_user import UserMixin
 import os
 import base64
 import onetimepass
 from hashlib import md5
+from flask_user import UserManager
 """
 Using Jinja2 to integrate database references within HTML
 ------------------------------------------------------------------
@@ -79,11 +80,10 @@ One startup has many jobs.
 
 
 
-class User(UserMixin, db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    password_hash = db.Column(db.String(64))
-    role = db.Column(db.String(64)) # must be either "Employer" or "Freelancer"
+    password = db.Column(db.String(64))
     first = db.Column(db.String(64), index=True)
     last = db.Column(db.String(64), index=True)
     registration_date = db.Column(db.DateTime, index=True)
@@ -103,7 +103,13 @@ class User(UserMixin, db.Model):
     #one to many relationship between user and reviews
     reviews = db.relationship('Reviews', backref='freelancer', lazy='dynamic')
     #one to many relationship between user and skills
-    skills = db.relationship('Skills', backref='freelancer', lazy='dynamic')
+    # oh boy, messages
+    messages_sent = db.relationship('Message',
+    foreign_keys='Message.sender_id', backref='sender', lazy='dynamic')
+    messages_recieved = db.relationship('Message',
+    foreign_keys='Message.recipient_id', backref='recipient', lazy='dynamic')
+    last_message_read_time = db.Column(db.DateTime)
+    roles = db.relationship('Role', secondary='user_roles')
 
     def avatar(self, size):
         """
@@ -122,20 +128,20 @@ class User(UserMixin, db.Model):
         return avatar_url
 
     def set_password(self, password):
-        self.password_hash = genhash(password)
+        self.password = genhash(password)
 
     def check_password(self, password):
-        return checkhash(self.password_hash, password)
+        return checkhash(self.password, password)
 
     @login.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     def set_registration_date(self):
         self.registration_date = datetime.now()
 
     def create_startup(self, startup):
-        if self.role == 'Employer':
+        if self.employer():
             self.startup.append(startup)
         else:
             print("Not an employer")
@@ -144,12 +150,21 @@ class User(UserMixin, db.Model):
         return self.username
 
     def add_job_to_job_list(self, job):
-        if not self.is_on_job_list(job) and self.role == 'Freelancer':
+        if not self.is_on_job_list(job) and self.freelancer():
             self.jobs.append(job)
 
     def remove_job_from_job_list(self, job):
-        if self.is_on_job_list(job) and self.role == 'Freelancer':
+        if self.is_on_job_list(job) and self.freelancer():
             self.jobs.remove(job)
+
+    def employer(self):
+        return ('Employer' in [role.name for role in self.roles])
+
+    def freelancer(self):
+        return ('Freelancer' in [role.name for role in self.roles])
+
+    def admin(self):
+        return ('Admin' in [role.name for role in self.roles])
 
     def is_on_job_list(self, job):
         return self.jobs.filter(jobs_users.c.job_id \
@@ -182,15 +197,34 @@ class User(UserMixin, db.Model):
             return 'Last seen {0} {1} ago'.format(x[1], x[0])
 
     def info(self):
-        if self.role == 'Employer':
+        if self.employer():
             return '<Employer {0}>'.format(self.username)
-        elif self.role == 'Freelancer':
+        elif self.freelancer():
             return '<Freelancer {0} {1}>'.format(self.first, self.last)
         else:
             return '<ROLE NOT ASSIGNED FOR {0}>'.format(self.username)
 
+    def new_messages(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(recipient=self).filter(
+        Message.timestamp > last_read_time).count()
+
+
     __repr__ = info
 
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+    def __repr__(self):
+        return "<Role {0}>".format(self.name)
+
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 class Startup(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -328,21 +362,6 @@ class Reviews(db.Model):
 
     __repr__ = info
 
-class Skills(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    primary_skill = db.Column(db.String(100), index=True)
-    skill2 = db.Column(db.String(100), index=True)
-    skill3 = db.Column(db.String(100), index=True)
-    skill4 = db.Column(db.String(100), index=True)
-    skill5 = db.Column(db.String(100), index=True)
-    skill6 = db.Column(db.String(100), index=True)
-    skill7 = db.Column(db.String(100), index=True)
-    skill8 = db.Column(db.String(100), index=True)
-    skill9 = db.Column(db.String(100), index=True)
-    skill10 = db.Column(db.String(100), index=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 class PastEmployments(db.Model):
     #table name is past_employments
     id = db.Column(db.Integer, primary_key=True)
@@ -358,3 +377,13 @@ class PastEmployments(db.Model):
         )
 
     __repr__ = info
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def info(self):
+        return '<Message {}>'.format(self.body)

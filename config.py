@@ -1,4 +1,5 @@
 import os
+
 base_directory = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
@@ -9,11 +10,18 @@ class Config(object):
     UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__)) + '/app/static/database_files'
     JOBS_PER_EXPLORE_PAGE = 10
     FREELANCERS_PER_PAGE = 9
+    COMPANIES_PER_PAGE_ADMIN = 15
+    FREELANCERS_PER_PAGE_ADMIN = 15
+    LANGUAGES = ['en', 'es']
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    """--------------Flask USER------------"""
+    USER_ENABLE_EMAIL = False
+    USER_UNATHORIZED_ENDPOINT = 'index'
+    """ -----------------------------------"""
     ERROR_ADMINS = ['startupsolution.appfailure@gmail.com']
     SEND_ADMINS = ['bendominguez011@gmail.com', 'startupsolution.appfailure@gmail.com']
     OAUTH_CREDENTIALS = {

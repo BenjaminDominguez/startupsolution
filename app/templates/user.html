@@ -24,13 +24,14 @@
   </tr>
 </table>
 {% endif %}
-<div class="row"><br></div>
 {% if current_user == user %}
 {% if not profile_pic %}
 <a href="{{ url_for('upload_profile_pic') }}">Upload a profile pic</a>
-<br>
 {% endif %}
+{% else %}
+<a href="#">Message User</a>
 {% endif %}
+<div class="row"><br></div>
 <ul class="nav nav-pills">
   <li class="nav item">
     <a class="nav-link {% if home_active %}active{% endif %}" href= "{{ url_for('user', username=user.username)}}">User home</a>

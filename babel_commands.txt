@@ -1,0 +1,16 @@
+Create pot
+pybabel extract -F babel.cfg -k _l -o messages.pot .
+
+Generate new language (es for spanish in this example)
+pybabel init -i messages.pot -d app/translations -l es
+
+To compile after translating
+pybabel compile -d app/translations
+
+To make a change to templates, forms, or routes
+After adding _ or _l
+pybabel extract -F babel.cfg -k _l -o messages.pot .
+pybabel update -i messages.pot -d app/translations
+
+Translate further
+pybabel compile -d app/translations

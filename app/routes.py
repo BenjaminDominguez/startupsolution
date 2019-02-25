@@ -1,25 +1,40 @@
 from app import app, db
 import os
-from app.models import Startup, Job, User
+from app.models import Startup, Job, User, Role
 from flask import render_template, flash, redirect, url_for, request, abort, session
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import login_user, logout_user
+from flask_user import roles_required, login_required, current_user
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
 EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic, EditCompanyForm,\
 PostNewJobForm, DeleteJobForm, EditJobForm
 from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 from datetime import datetime
+from flask_babel import _
 
 # The before request decorator allows me to
 # run this function before any other view function.
 # This function simply checks if the current user is logged in
 # and if they are, set the last seen to utcnow()
+"""
+There shouldn't be many scenarios where the employer is not
+allowed access to a freelancer page
+
+"""
+employer_message = _('Must be an employer to access this page.')
+freelancer_message = _('Must be a freelancer to access this page')
+current_user_message = _('You must be the user to access this page')
 
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
+
+def redirect_url(default='index'):
+    return request.args.get('next') or \
+    request.referrer or \
+    url_for(default)
 
 @app.route('/')
 @app.route('/index')
@@ -46,10 +61,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None:
-            flash('Username does not exist')
+            flash(_('Username does not exist'))
             return redirect(url_for('login'))
         elif user.check_password(str(form.password.data)) is False:
-            flash("Incorrect password. Try again.")
+            flash(_("Incorrect password. Try again."))
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         """
@@ -60,7 +75,7 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('index')
-        flash("Login succesful")
+        flash(_("Login succesful"))
         return redirect(next_page)
     return render_template('login.html', title='Login', form=form)
 
@@ -70,8 +85,12 @@ def start_registration():
         return redirect(url_for('index'))
     form = FirstRegistrationForm()
     if form.validate_on_submit():
+        """
+        This should not be added first
+        """
         user = User(username = form.username.data, email=form.email.data)
         user.set_password(form.password.data)
+        user.registration_date = datetime.utcnow()
         db.session.add(user)
         db.session.commit()
         """
@@ -87,11 +106,13 @@ def second_registration():
     user = User.query.filter_by(username=request.args['user']).first()
     form = SecondRegistrationForm()
     if form.validate_on_submit():
-        user.role = form.role.data
+        role = Role.query.filter_by(name=form.role.data).first()
+        user.roles.append(role)
+        db.session.add(role)
         db.session.commit()
-        if form.role.data == "Employer":
+        if user.employer():
             return redirect(url_for('employer_registration', user=user.username))
-        elif form.role.data == "Freelancer":
+        elif user.freelancer():
             return redirect(url_for('freelancer_registration', user=user.username))
     return render_template('registration/second_registration.html', title='Which are you?', form=form)
 
@@ -107,24 +128,28 @@ def employer_registration():
     user = User.query.filter_by(username=request.args['user']).first()
     form = EmployerRegistrationForm()
     if form.validate_on_submit():
-        file = request.files['logo']
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        try:
+            file = request.files['logo']
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+        except KeyError:
+            file_path = None
         startup_kwargs = {
         'company_name': form.company_name.data,
         'email': user.email,
         'state_of_incorporation': form.state_of_incorporation.data,
         'company_type': form.company_type.data,
         'taxID': form.taxID.data,
-        'logo_data': os.path.join(app.config['UPLOAD_FOLDER'], filename),
-        'description': description
+        'logo_data': file_path,
+        'description': form.description.data
         }
         startup = Startup(**startup_kwargs)
         db.session.add(startup)
         user.create_startup(startup)
         db.session.commit()
         login_user(user)
-        flash("Successfully registered your company {1}!".format(startup.company_name))
+        flash(_("Successfully registered your company %(company_name)s!", company_name=startup.company_name))
         return redirect(url_for('login'))
     return render_template('registration/employer_registration.html', title='Register your company!', form=form)
 
@@ -139,14 +164,15 @@ def freelancer_registration():
         form.last.data, form.occupation.data, form.about_me.data, form.hours_a_week.data
         db.session.commit()
         login_user(user)
-        flash("Successfully created profile!")
+        flash(_("Successfully created profile!"))
         return redirect(url_for('login'))
     return render_template('registration/freelancer_registration.html', title='Register!', form=form)
 
 @app.route('/freelancers_available')
+@roles_required(['Employer', 'Admin'])
 def freelancers_available():
     page = request.args.get('page', 1, type=int)
-    most_recently_active = User.query.filter_by(role="Freelancer").\
+    most_recently_active = User.query.filter(User.roles.any(name="Freelancer")).\
     order_by(User.last_seen.desc()).paginate(page,\
     app.config['FREELANCERS_PER_PAGE'], False)
     next_url = (url_for('freelancers_available', page=most_recently_active.next_num)\
@@ -214,6 +240,7 @@ def current_jobs(username):
 
 @app.route('/company/<company_name>', methods=['GET', 'POST'])
 @login_required
+@roles_required(['Employer', 'Admin'])
 def company(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
     # for now, but I have to see how competitors treat this
@@ -258,6 +285,7 @@ def company(company_name):
 
 @app.route('/company/<company_name>/edit_profile', methods=['GET', 'POST'])
 @login_required
+@roles_required(['Employer', 'Admin'])
 def company_edit_profile(company_name):
     company = Startup.query.filter_by(company_name = company_name).first_or_404()
     if current_user.startup.first() != company:
@@ -272,6 +300,8 @@ def company_edit_profile(company_name):
     return render_template('company/edit_company_profile.html', title='Edit your profile', form = form)
 
 @app.route('/company/<company_name>/new_job_posting', methods=['GET', 'POST'])
+@login_required
+@roles_required(['Employer', 'Admin'])
 def new_job_posting(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
     is_admin = (current_user.startup.first() == company)
@@ -292,7 +322,7 @@ def new_job_posting(company_name):
         db.session.add(job)
         company.create_job(job)
         db.session.commit()
-        flash('Successfully created new job')
+        flash(_('Successfully created new job'))
         return redirect(url_for('company', company_name=company_name))
     return render_template('company/new_job_listing.html', title='Create new job listing', form=form)
 
@@ -302,6 +332,7 @@ This is not working right now
 """
 @app.route('/company/<company_name>/<job_name>/delete_job')
 @login_required
+@roles_required(['Employer', 'Admin'])
 def delete_job(company_name, job_name):
     db.session.delete(job)
     db.session.commit()
@@ -309,6 +340,7 @@ def delete_job(company_name, job_name):
 
 @app.route('/company/<company_name>/<job_name>/edit_job', methods=['GET', 'POST'])
 @login_required
+@roles_required(['Employer', 'Admin'])
 def edit_job_details(company_name, job_name):
     deleteform = DeleteJobForm()
     editform = EditJobForm()
@@ -324,7 +356,7 @@ def edit_job_details(company_name, job_name):
             flash("Job '{0}' deleted".format(job.name))
             return redirect(url_for('company', company_name=company_name))
         else:
-            flash('Password or username incorrect.')
+            flash(_('Password or username incorrect.'))
             return redirect(url_for('edit_job_details', company_name=company_name, job_name=job_name))
     if editform.validate_on_submit():
         job.name = editform.name.data
@@ -334,7 +366,7 @@ def edit_job_details(company_name, job_name):
         job.estimated_developement_time = editform.estimated_developement_time.data
         job.equity_job = editform.equity_job.data
         db.session.commit()
-        flash("Changes saved.")
+        flash(_("Changes saved."))
         return redirect(url_for('edit_job_details', company_name=company_name, job_name=job_name))
     if request.method == 'GET':
         editform.name.data = job.name
@@ -355,17 +387,28 @@ def upload_profile_pic():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         current_user.avatar_data = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        flash("Succesfully submitted profile pic!")
+        flash(_("Succesfully submitted profile pic!"))
         db.session.commit()
         return redirect(url_for('user', username=current_user.username))
     return render_template('user/upload_profile_pic.html', title='Upload Profile Pic', form=form)
+
+@app.route('/admin/freelancer_info')
+@roles_required('Admin')
+def freelancer_info():
+    return render_template('/admin/freelancer_info.html', title='Freelancer info')
+
+@app.route('/admin/company_info')
+@roles_required('Admin')
+def company_info():
+    companies = Startup.query.all()
+    return render_template('/admin/company_info.html', title='Company info', companies=companies)
 
 @app.route('/aboutus')
 def about_us():
     return render_template('about_us.html')
 
 @app.route('/post_job', methods=['GET', 'POST'])
-@login_required
+@roles_required(['Employer', 'Admin'])
 def post_job():
     return "pass"
 
