@@ -7,7 +7,6 @@ from flask_bootstrap import Bootstrap
 from flask_babel import Babel
 from flask_babel import lazy_gettext as _l
 from flask_mail import Mail
-from flask_user import UserManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
@@ -69,6 +68,3 @@ if not app.debug:
 
 
 from app import routes, models, errors
-from app.models import Role, User
-
-user_manager = UserManager(app, db, User)

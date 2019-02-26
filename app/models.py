@@ -2,12 +2,11 @@ from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 genhash, checkhash = generate_password_hash, check_password_hash
-from flask_user import UserMixin
+from flask_login import UserMixin
 import os
 import base64
 import onetimepass
 from hashlib import md5
-from flask_user import UserManager
 """
 Using Jinja2 to integrate database references within HTML
 ------------------------------------------------------------------

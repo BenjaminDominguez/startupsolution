@@ -18,10 +18,6 @@ class Config(object):
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    """--------------Flask USER------------"""
-    USER_ENABLE_EMAIL = False
-    USER_UNATHORIZED_ENDPOINT = 'index'
-    """ -----------------------------------"""
     ERROR_ADMINS = ['startupsolution.appfailure@gmail.com']
     SEND_ADMINS = ['bendominguez011@gmail.com', 'startupsolution.appfailure@gmail.com']
     OAUTH_CREDENTIALS = {

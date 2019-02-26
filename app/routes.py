@@ -2,8 +2,7 @@ from app import app, db
 import os
 from app.models import Startup, Job, User, Role
 from flask import render_template, flash, redirect, url_for, request, abort, session
-from flask_login import login_user, logout_user
-from flask_user import roles_required, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
 EmployerRegistrationForm, FreelancerForm, EditProfileForm, UploadProfilePic, EditCompanyForm,\
 PostNewJobForm, DeleteJobForm, EditJobForm
@@ -11,6 +10,7 @@ from werkzeug.urls import url_parse
 from werkzeug import secure_filename
 from datetime import datetime
 from flask_babel import _
+from functools import wraps
 
 # The before request decorator allows me to
 # run this function before any other view function.
@@ -21,9 +21,25 @@ There shouldn't be many scenarios where the employer is not
 allowed access to a freelancer page
 
 """
-employer_message = _('Must be an employer to access this page.')
-freelancer_message = _('Must be a freelancer to access this page')
-current_user_message = _('You must be the user to access this page')
+
+"""
+Writing a roles decorator.
+
+"""
+def roles_required(roles):
+    def real_decorator(view):
+        @wraps(view)
+        def decorated_view(*args, **kwargs):
+            if 'Employer' in roles and current_user.employer():
+                return view(*args, **kwargs)
+            elif 'Admin' in roles and current_user.admin():
+                return view(*args, **kwargs)
+            elif 'Freelancer' in roles and current_user.freelancer():
+                return view(*args, **kwargs)
+            else:
+                return render_template('errors/404.html'), 404
+        return decorated_view
+    return real_decorator
 
 @app.before_request
 def before_request():
@@ -39,13 +55,7 @@ def redirect_url(default='index'):
 @app.route('/')
 @app.route('/index')
 def index():
-    kwargs = {
-    'jobs': [job for job in User.query.get(1).jobs],
-    'month': 10,
-    'day': 2,
-    'year': 2014
-    }
-    return render_template('index.html', **kwargs)
+    return render_template('index.html')
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -169,7 +179,6 @@ def freelancer_registration():
     return render_template('registration/freelancer_registration.html', title='Register!', form=form)
 
 @app.route('/freelancers_available')
-@roles_required(['Employer', 'Admin'])
 def freelancers_available():
     page = request.args.get('page', 1, type=int)
     most_recently_active = User.query.filter(User.roles.any(name="Freelancer")).\
@@ -184,6 +193,8 @@ def freelancers_available():
     next_url=next_url, prev_url=prev_url)
 
 @app.route('/jobs')
+@login_required
+@roles_required(['Employer'])
 def jobs_available():
     page = request.args.get('page', 1, type=int)
     jobs = Job.query.order_by(Job.posted_on.desc()).paginate(
@@ -240,7 +251,6 @@ def current_jobs(username):
 
 @app.route('/company/<company_name>', methods=['GET', 'POST'])
 @login_required
-@roles_required(['Employer', 'Admin'])
 def company(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
     # for now, but I have to see how competitors treat this
@@ -285,7 +295,6 @@ def company(company_name):
 
 @app.route('/company/<company_name>/edit_profile', methods=['GET', 'POST'])
 @login_required
-@roles_required(['Employer', 'Admin'])
 def company_edit_profile(company_name):
     company = Startup.query.filter_by(company_name = company_name).first_or_404()
     if current_user.startup.first() != company:
@@ -301,7 +310,6 @@ def company_edit_profile(company_name):
 
 @app.route('/company/<company_name>/new_job_posting', methods=['GET', 'POST'])
 @login_required
-@roles_required(['Employer', 'Admin'])
 def new_job_posting(company_name):
     company = Startup.query.filter_by(company_name=company_name).first_or_404()
     is_admin = (current_user.startup.first() == company)
@@ -332,7 +340,6 @@ This is not working right now
 """
 @app.route('/company/<company_name>/<job_name>/delete_job')
 @login_required
-@roles_required(['Employer', 'Admin'])
 def delete_job(company_name, job_name):
     db.session.delete(job)
     db.session.commit()
@@ -340,7 +347,6 @@ def delete_job(company_name, job_name):
 
 @app.route('/company/<company_name>/<job_name>/edit_job', methods=['GET', 'POST'])
 @login_required
-@roles_required(['Employer', 'Admin'])
 def edit_job_details(company_name, job_name):
     deleteform = DeleteJobForm()
     editform = EditJobForm()
@@ -393,12 +399,14 @@ def upload_profile_pic():
     return render_template('user/upload_profile_pic.html', title='Upload Profile Pic', form=form)
 
 @app.route('/admin/freelancer_info')
-@roles_required('Admin')
+@login_required
+@roles_required(['Admin'])
 def freelancer_info():
     return render_template('/admin/freelancer_info.html', title='Freelancer info')
 
 @app.route('/admin/company_info')
-@roles_required('Admin')
+@login_required
+@roles_required(['Admin'])
 def company_info():
     page = request.args.get('page', 1, type=int)
     employers = User.query.filter(User.roles.any(name="Employer")).\
@@ -417,7 +425,7 @@ def about_us():
     return render_template('about_us.html')
 
 @app.route('/post_job', methods=['GET', 'POST'])
-@roles_required(['Employer', 'Admin'])
+@login_required
 def post_job():
     return "pass"
 
