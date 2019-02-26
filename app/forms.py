@@ -63,7 +63,7 @@ class FirstRegistrationForm(FlaskForm):
     def validate_email(self, email):
         email = User.query.filter_by(email=email.data).first()
         if email is not None:
-            raise ValidationError(_('Username taken. Please select a different one'))
+            raise ValidationError(_('Email taken. Please select a different one'))
 
 
 class SecondRegistrationForm(FlaskForm):

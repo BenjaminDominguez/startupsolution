@@ -10,23 +10,23 @@
       <th scope="col">Username (admin)</th>
       <th scope="col">Company Name</th>
       <th scope="col"># of Current Jobs</th>
-      <th scope="col">Date and Time joined</th>
+      <th scope="col">Last seen</th>
       <th scope="col">Company Type</th>
       <th scope="col">State of incorporation</th>
       <th scope="col">Website</th>
     </tr>
     </thead>
       <tbody>
-        {% for company in companies %}
+        {% for employer in employers %}
         <tr>
-        <th scope="row">{{ company.id }}</th>
-        <td> {{company.admin.username }}</td>
-        <td> {{ company.company_name }} </td>
-        <td> {{ company.jobs.count() }} </td>
-        <td> {{ company.admin.registration_date }}</td>
-        <td> {{ company.company_type }} </td>
-        <td> {{ company.state_of_incorporation }}</td>
-        <td><a href="{{ company.website }}"> {{ company.website}}</a></td>
+        <th scope="row">{{ employer.startup.first().id }}</th>
+        <td> {{ employer.username }}</td>
+        <td> {{ employer.startup.first().company_name }} </td>
+        <td> {{ employer.startup.first().jobs.count() }} </td>
+        <td> {{ employer.last_seen.month }}/{{ employer.last_seen.day }}/{{ employer.last_seen.year }} - {{ employer.last_seen.hour }}:{{ employer.last_seen.minute }}</td>
+        <td> {{ employer.startup.first().company_type }} </td>
+        <td> {{ employer.startup.first().state_of_incorporation }}</td>
+        <td><a href="{{ employer.startup.website }}"> {{ employer.startup.first().website}}</a></td>
         </tr>
         {% endfor %}
       </tbody>

@@ -400,8 +400,17 @@ def freelancer_info():
 @app.route('/admin/company_info')
 @roles_required('Admin')
 def company_info():
-    companies = Startup.query.all()
-    return render_template('/admin/company_info.html', title='Company info', companies=companies)
+    page = request.args.get('page', 1, type=int)
+    employers = User.query.filter(User.roles.any(name="Employer")).\
+    order_by(User.last_seen.desc()).\
+    paginate(page, app.config['COMPANIES_PER_PAGE_ADMIN'], False)
+    next_url = (url_for('company_info', page=employers.next_num)\
+    if employers.has_next else None)
+    prev_url = (url_for('company_info', page=employers.prev_num)\
+    if employers.has_prev else None)
+    return render_template("admin/company_info.html",\
+    employers = employers.items,\
+    next_url=next_url, prev_url=prev_url)
 
 @app.route('/aboutus')
 def about_us():
