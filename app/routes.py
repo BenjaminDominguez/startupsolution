@@ -24,6 +24,8 @@ allowed access to a freelancer page
 
 """
 Writing a roles decorator.
+Only using this for admin now
+Works for Employer, Admin, and Freelancer
 
 """
 def roles_required(roles):
@@ -194,7 +196,6 @@ def freelancers_available():
 
 @app.route('/jobs')
 @login_required
-@roles_required(['Employer'])
 def jobs_available():
     page = request.args.get('page', 1, type=int)
     jobs = Job.query.order_by(Job.posted_on.desc()).paginate(

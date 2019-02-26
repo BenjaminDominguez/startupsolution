@@ -30,6 +30,13 @@ class Config(object):
         'secret': 'm9TEd58DSEtRrZHpz2EjrV9AhsBRxKMo8m3kuIZj3zLwzwIimt'
     }
 }
+    """RECAPTCHA SETTINGS"""
+    #required
+    RECAPTCHA_PUBLIC_KEY = 'you-will-never-guess'
+    RECAPTCHA_PRIVATE_KEY = 'you-will-also-never-guess'
+
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+
 # to grab a key with nested dictionaries
 # to get id of facebook
 # app.config['OAUTH_CREDENTIALS']['linkedin']['id']

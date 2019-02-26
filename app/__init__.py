@@ -9,6 +9,7 @@ from flask_babel import lazy_gettext as _l
 from flask_mail import Mail
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
+from flask_recaptcha import ReCaptcha
 import os
 
 app = Flask(__name__)
@@ -23,6 +24,7 @@ login.login_message = _l("Please log in to access this page")
 mail = Mail(app)
 bootstrap = Bootstrap(app)
 babel = Babel(app)
+recaptcha = ReCaptcha(app)
 
 @babel.localeselector
 def get_locale():

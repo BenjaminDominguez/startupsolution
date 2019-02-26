@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField,\
 SubmitField, SelectField, DateTimeField, TextAreaField, RadioField
 from wtforms.validators import ValidationError, DataRequired, DataRequired, Email,\
@@ -39,6 +39,7 @@ hours_a_week_tup = tups[5]
 class LoginForm(FlaskForm):
     username = StringField(_l('Username or email'), validators=[DataRequired()])
     password = PasswordField(_l('Password'), validators=[DataRequired()])
+    recaptcha = RecaptchaField()
     remember_me = BooleanField(_l('Remember Me'))
     submit = SubmitField(_l('Sign in'))
 
