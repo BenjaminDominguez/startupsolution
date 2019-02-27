@@ -116,9 +116,12 @@ class User(db.Model, UserMixin):
         Gravatar, and encode the string to bytes before passing it to
         the hash function.
         """
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-            digest, size)
+        if self.email is not None:
+            digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+            return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+                digest, size)
+        else:
+            return None
 
     def make_avatar_url(self):
         if self.avatar_data:
@@ -256,9 +259,12 @@ class Startup(UserMixin, db.Model):
         Gravatar, and encode the string to bytes before passing it to
         the hash function.
         """
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
-            digest, size)
+        if self.email:
+            digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+            return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
+                digest, size)
+        else:
+            return None
 
     def make_logo_url(self):
         if self.logo_data:

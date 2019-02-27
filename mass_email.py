@@ -1,5 +1,4 @@
-from app import app
-from flask import render_template
+from flask import render_template, current_app
 from flask_mail import Message
 from app import mail
 from app.models import User
@@ -30,31 +29,31 @@ class MassEmail(object):
                 os.environ[str(key)] = value
 
     def send_mass_email(self, subject, template_name, recipients, **template_kwargs):
-        with app.app_context():
+        with current_app._get_current_object().app_context():
             msg = Message(subject, sender = self.sender, recipients=recipients)
             msg.html = render_template('/emails/{0}'.format(template_name), **template_kwargs)
             mail.send(msg)
 
     def mass_email_employers_no_ref(self, subject, template_name):
         emails= [employer.email for employer in self.employers if employer.email]
-        with app.app_context():
+        with current_app._get_current_object().app_context():
             self.send_mass_email(subject=subject, recipients=emails, template_name=template_name)
 
     def mass_email_freelancers_no_ref(self, subject, template_name):
         emails = [freelancer.email for freelancer in self.freelancers if freelancer.email]
-        with app.app_context():
+        with current_app._get_current_object().app_context():
             self.send_mass_email(subject=subject, recipients=emails, template_name=template_name)
 
     def mass_email_employers_ref(self, subject, template_name):
         for employer in self.employers:
             user, email = employer, employer.email
-            with app.app_context():
+            with current_app._get_current_object().app_context():
                 self.send_mass_email(subject=subject, template_name=template_name, recipients=email, user=user)
 
     def mass_email_freelancers_ref(self, subject, template_name):
         for freelancer in self.freelancers:
             user, email = freelancer, freelancer.email
-            with app.app_context():
+            with current_app._get_current_object().app_context():
                 self.send_mass_email(subject=subject, template_name=template_name, recipients=email, user=user)
 
     def __repr__(self):

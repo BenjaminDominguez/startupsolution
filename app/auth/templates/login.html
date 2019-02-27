@@ -1,5 +1,3 @@
-
-
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
@@ -17,11 +15,10 @@
   <br>
   {{ wtf.form_field(form.password, form_type='password') }}
 
-{{ form.recaptcha }}
+<!-- {{ form.recaptcha }} -->
 <br>
-<button type="submit" class="btn btn-outline-primary btn-sm">
-  {{ wtf.form_field(form.submit, form_type='submit')}}
-</button>
+
+{{ wtf.form_field(form.submit, form_type='submit')}}
 
 </form>
 <!--
@@ -39,10 +36,10 @@
 <!--
 <!-- <h4> Or alternatively, </h4>
 
-<h4><a href="{{ url_for('login_with_github')}}"><img src='/static/github.png' width='275' height='55'></a></h4>
-<h4><a href="{{ url_for('login_with_linkedin') }}"><img src='/static/Signin-with-LinkedIn.png' width='275' height='55'></a></h4><br> -->
+<h4><a href="{{ url_for('auth.login_with_github')}}"><img src='/static/github.png' width='275' height='55'></a></h4>
+<h4><a href="{{ url_for('auth.login_with_linkedin') }}"><img src='/static/Signin-with-LinkedIn.png' width='275' height='55'></a></h4><br> -->
 <div class="row"><br></div>
 <p>{{ _('Not already a user?')}}
-  <a href="{{ url_for('start_registration') }}"> {{_('Register here!')}}</a></p>
+  <a href="{{ url_for('auth.start_registration') }}"> {{_('Register here!')}}</a></p>
 </div>
 {% endblock %}

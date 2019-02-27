@@ -14,7 +14,7 @@
     <b><p>{{ job.name }}</p></b>
       </td>
     <td>
-    <p> Posted by <a href="{{url_for('company', company_name=job.company.company_name)}}">{{ job.company.company_name }}</p>
+    <p> Posted by <a href="{{url_for('employer.company', company_name=job.company.company_name)}}">{{ job.company.company_name }}</p>
     </td>
   </tr>
   </div>

@@ -18,7 +18,7 @@
 
 {% block navbar %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #1E90FF;">
-  <a class="navbar-brand" href="{{ url_for('index') }}">
+  <a class="navbar-brand" href="{{ url_for('main.index') }}">
   <!--<img src="static/database_files/Logo.png" width="30" height="30" class="d-inline-block align-top" alt="">-->
     Freeline</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,16 +28,16 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('index') }}">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
       </li>
 <!-- if the current user is not logged in, show them the login tab, else, show them the logout tab -->
       {% if current_user.is_anonymous %}
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
       </li>
       {% else %}
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
       </li>
       {% endif %}
 <!----------------------------------------------------------->
@@ -49,8 +49,8 @@
         </a>
         {% with company_name = current_user.startup.first().company_name %}
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{url_for('company', company_name=company_name)}}">Employer page</a>
-          <a class="dropdown-item" href="{{url_for('new_job_posting', company_name=company_name)}}">Post a new job</a>
+          <a class="dropdown-item" href="{{url_for('employer.company', company_name=company_name)}}">Employer page</a>
+          <a class="dropdown-item" href="{{url_for('employer.new_job_posting', company_name=company_name)}}">Post a new job</a>
           <a class='dropdown-item' href="#">Manage current jobs</a>
         {% endwith %}
       </div>
@@ -61,21 +61,21 @@
     Dashboard
   </a>
   <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-    <a class="dropdown-item" href="{{ url_for('user', username=current_user.username) }}">Profile page</a>
-    <a class="dropdown-item" href="{{ url_for('jobs_available')}}">Browse jobs available</a>
-    <a class='dropdown-item' href="{{ url_for('current_jobs', username=current_user.username)}}">Manage current jobs</a>
+    <a class="dropdown-item" href="{{ url_for('freelancer.user', username=current_user.username) }}">Profile page</a>
+    <a class="dropdown-item" href="{{ url_for('main.jobs_available')}}">Browse jobs available</a>
+    <a class='dropdown-item' href="{{ url_for('freelancer.current_jobs', username=current_user.username)}}">Manage current jobs</a>
 </div>
 </li>
 {% endif %}
 {% endif %}
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('freelancers_available')}}">Freelancers available</a>
+  <a class="nav-link" href="{{ url_for('main.freelancers_available')}}">Freelancers available</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('jobs_available')}}">Jobs available</a>
+  <a class="nav-link" href="{{ url_for('main.jobs_available')}}">Jobs available</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('about_us')}}">About us</a>
+  <a class="nav-link" href="{{ url_for('main.about_us')}}">About us</a>
 </li>
     </ul>
     <form class="form-inline my-2 my-lg-0">

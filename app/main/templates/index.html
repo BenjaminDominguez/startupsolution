@@ -9,9 +9,9 @@
   </div>
 <div class="row"><br></div>
 <ul class="list-group">
-<a href="{{ url_for('company_info') }}" class="list-group-item list-group-item-action">Company information</a>
-<a href="{{ url_for('freelancer_info') }}" class="list-group-item list-group-item-action">Freelancer information</a>
-<a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action">Logout</a>
+<a href="{{ url_for('admin.company_info') }}" class="list-group-item list-group-item-action">Company information</a>
+<a href="{{ url_for('admin.freelancer_info') }}" class="list-group-item list-group-item-action">Freelancer information</a>
+<a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action">Logout</a>
 </ul>
 </div>
 {% endif %}
@@ -25,14 +25,14 @@
   <p class="lead">You're an {{ current_user.roles[0].name.lower() }} looking for freelancers and possibly future business partners.</p>
     <hr class="my-4">
   <p> Click the button below to get started.</p>
-  <a class="btn btn-primary btn-lg" href="{{ url_for('freelancers_available')}}" role="button">Available freelancers.</a>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('main.freelancers_available')}}" role="button">Available freelancers.</a>
   {% elif current_user.freelancer() %}
   <div class="jumbotron">
     <h1 class="display-4">Welcome to Freeline.</h1>
   <p class="lead">You're a frelancer looking for work and maybe some stake in a fresh startup.</p>
     <hr class="my-4">
   <p> Click the button below to get started.</p>
-  <a class="btn btn-primary btn-lg" href="{{ url_for('jobs_available')}}" role="button">Available jobs</a>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('main.jobs_available')}}" role="button">Available jobs</a>
   {% endif %}
   {% else %}
   <div class="jumbotron">
@@ -40,7 +40,7 @@
   <p class="lead">Login if you have an account to continue making progress.</p>
     <hr class="my-4">
   <p> If you haven't made an account yet, click the button below to get started.</p>
-  <a class="btn btn-primary btn-lg" href="{{ url_for('start_registration')}}" role="button">Register</a>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('auth.start_registration')}}" role="button">Register</a>
 </div>
 
 {% endif %}

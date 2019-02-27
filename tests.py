@@ -1,16 +1,24 @@
 import unittest
 from datetime import datetime
-from app import app, db
+from app import create_app, db
 from app.models import Startupcreator, Startup, Job, Developer
+from config import Config
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 class StartupTestCase(unittest.TestCase):
     def setUp(self):
-        app.config['SQLAlchemy_Database_URI'] = 'sqlite://'
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
         db.create_all()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
     def test_startup_methods(self):
         s = Startup(name='partnerup')
@@ -46,6 +54,6 @@ class StartupTestCase(unittest.TestCase):
     def test_job_developer_relationship(self):
         pass
 
-        
+
 if __name__ == '__main__':
     unittest.main(verbosity=2) # adjust the verbosity from 0 to 2 for more or less detail on tests

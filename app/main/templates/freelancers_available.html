@@ -19,7 +19,7 @@
         <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
         <p class="card-text">{{ freelancer.about_me }}</p>
         <p class="card-text"><small class="text-muted">{{ freelancer.last_seen_string() }}</small></p>
-        <a href="{{ url_for('user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
+        <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
   </div>
   </div>
 </div>
@@ -42,7 +42,7 @@
     <h5 class="card-title">{{ freelancer.first }} {{ freelancer.last }}</h5>
     <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
     <p class="card-text">{{ freelancer.about_me }}</p>
-    <a href="{{ url_for('user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
+    <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
   </div>
   </div>
 </div>
@@ -65,7 +65,7 @@
     <h5 class="card-title">{{ freelancer.first }} {{ freelancer.last }}</h5>
     <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
     <p class="card-text">{{ freelancer.about_me }}</p>
-    <a href="{{ url_for('user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
+    <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
   </div>
   </div>
 </div>
