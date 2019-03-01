@@ -4,28 +4,27 @@
   <!-- required meta tags -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- import bootstrap css -->
+  <!-- BOOTSTRAP CORE CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.12.0/bootstrap-social.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/brands.css" integrity="sha384-BKw0P+CQz9xmby+uplDwp82Py8x1xtYPK3ORn/ZSoe6Dk3ETP59WCDnX+fI1XCKK" crossorigin="anonymous">
   <title>
     {% if title %}
       {{ title }}
     {% else %}
-      Startup Solution
+      Freeline
     {% endif %}
   </title>
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #1E90FF;">
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light" style="background-color: #1E90FF;">
   <a class="navbar-brand" href="{{ url_for('main.index') }}">
   <!--<img src="static/database_files/Logo.png" width="30" height="30" class="d-inline-block align-top" alt="">-->
-    Freeline</a>
+    freeline</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
@@ -72,7 +71,7 @@
   <a class="nav-link" href="{{ url_for('main.freelancers_available')}}">Freelancers available</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{{ url_for('main.jobs_available')}}">Jobs available</a>
+  <a class="nav-link" href="{{ url_for('main.jobs_available')}}">Projects available</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="{{ url_for('main.about_us')}}">About us</a>
@@ -82,14 +81,14 @@
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
-  </div>
+</div>
 </nav>
 {% endblock %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<div class="container">
-<div class="container">
+{{ moment.include_moment() }}
+
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 <div class="row"><br></div>
@@ -104,10 +103,8 @@
     {% endfor %}
 {% endif %}
 {% endwith %}
-</div>
 {% block content %}
 
 <!-- adding javascript from bootstrap, needs to be added at the end of the page -->
 
 {% endblock %}
-</div>

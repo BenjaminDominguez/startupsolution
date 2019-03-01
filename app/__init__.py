@@ -7,9 +7,12 @@ from flask_bootstrap import Bootstrap
 from flask_babel import Babel
 from flask_babel import lazy_gettext as _l
 from flask_mail import Mail
+from flask_moment import Moment
+# from flask_socketio import SocketIO
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
+from elasticsearch import Elasticsearch
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -19,6 +22,8 @@ login.login_message = _l("Please log in to access this page")
 mail = Mail()
 bootstrap = Bootstrap()
 babel = Babel()
+# socketio = SocketIO()
+moment = Moment()
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -30,6 +35,10 @@ def create_app(config_class=Config):
     mail.init_app(app)
     bootstrap.init_app(app)
     babel.init_app(app)
+    # socketio.init_app(app)
+    moment.init_app(app)
+
+    app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
 
     from app.errors import bp as errors_bp
     from app.auth import bp as auth_bp
@@ -37,6 +46,7 @@ def create_app(config_class=Config):
     from app.main import bp as main_bp
     from app.admin import bp as admin_bp
     from app.employer import bp as employer_bp
+    from app.chat import bp as chat_bp
 
     app.register_blueprint(errors_bp, url_prefix='/error')
     app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -44,6 +54,7 @@ def create_app(config_class=Config):
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(employer_bp, url_prefix='/employer')
+    app.register_blueprint(chat_bp, url_prefix='/chat')
 
     @babel.localeselector
     def get_locale():

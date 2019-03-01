@@ -4,6 +4,7 @@ from app.models import User, Job
 from app.special import roles_required
 from flask_login import login_required, current_user
 from app.freelancer.forms import EditProfileForm, UploadProfilePicForm, SendMessageForm
+from flask import render_template, redirect, url_for, session, request
 
 @bp.route('/<username>')
 @login_required

@@ -1,24 +1,27 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css')}}">
 <div class="container">
   <div class="row"><br></div>
 <div class="form-group col-md-6">
-<h3>{{_('Login')}}</h3>
+ <h3 class="login-heading mb-4">{{ _("Welcome back!")}}</h3>
 
 <form class="form form-horizontal" method="post" role="form">
+  <div class="form-label-group">
   {{ form.hidden_tag() }}
-  {{ wtf.form_errors(form, hiddens="only") }}
+  {{ form.username(autofocus=true) }}
+  </div>
+  <div class="form-label-group">
+  {{ form.password(autofocus=true) }}
+  </div>
+  <div class="custom-control custom-checkbox mb-3">
+  {{ form.remember_me }}
+  </div>
+{{ form.submit }}
 
-  {{ wtf.form_field(form.username) }}
-  <small id="emailHelp" class="form-text text-muted">{{ _("We'll never share your email with anyone else unless you tell us to.") }}</small>
-  <br>
-  {{ wtf.form_field(form.password, form_type='password') }}
-
-<!-- {{ form.recaptcha }} -->
-<br>
-
-{{ wtf.form_field(form.submit, form_type='submit')}}
+<div class="text-center">
+<a class="small" href="#">Forgot password?</a>
+</div>
 
 </form>
 <!--

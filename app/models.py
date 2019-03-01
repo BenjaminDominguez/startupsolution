@@ -80,6 +80,9 @@ One startup has many jobs.
 
 
 class User(db.Model, UserMixin):
+
+    __searchable__ = ['city', 'hours_a_week', 'occupation']
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64))
@@ -92,6 +95,7 @@ class User(db.Model, UserMixin):
     social_id = db.Column(db.String(64), nullable=True) #nullable?
     about_me = db.Column(db.String(1000))
     avatar_data = db.Column(db.String(400))
+    city = db.Column(db.String(100))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     # one to one relationship between user and startup
     startup = db.relationship('Startup', backref='admin', lazy='dynamic')
@@ -109,6 +113,7 @@ class User(db.Model, UserMixin):
     foreign_keys='Message.recipient_id', backref='recipient', lazy='dynamic')
     last_message_read_time = db.Column(db.DateTime)
     roles = db.relationship('Role', secondary='user_roles')
+    ranking = db.Column(db.Integer, index=True)
 
     def avatar(self, size):
         """
@@ -210,6 +215,9 @@ class User(db.Model, UserMixin):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
         return Message.query.filter_by(recipient=self).filter(
         Message.timestamp > last_read_time).count()
+
+    def calculate_ranking(self):
+        pass
 
 
     __repr__ = info
@@ -316,6 +324,9 @@ class Startup(UserMixin, db.Model):
     __repr__ = info
 
 class Job(db.Model):
+
+    __searchable__ = ['name', 'equity_job', 'job_description', 'offer_price', 'job_type', 'estimated_developement_time']
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     job_description = db.Column(db.String(1000))

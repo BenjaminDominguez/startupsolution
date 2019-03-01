@@ -23,11 +23,35 @@ hours_a_week = ['Less than 10 hours a week', '10 to 20 hours a week', '20 to 30 
 ef = ['Employer', 'Freelancer']
 
 class LoginForm(FlaskForm):
-    username = StringField(_l('Username or email'), validators=[DataRequired()])
-    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    username = StringField(_l('Username or email'), validators=[DataRequired()],\
+    render_kw={
+    'type': 'username',
+    'id': 'inputEmail',
+    'class': 'form-control',
+    'placeholder': 'Username',
+    'required': True,
+    'autofocus': True
+    })
+    password = PasswordField(_l('Password'), validators=[DataRequired()],\
+    render_kw={
+    'type': 'password',
+    'id': 'inputPassword',
+    'class': 'form-control',
+    'placeholder': 'Password',
+    'required': True,
+    'autofocus': True
+    })
     # recaptcha = RecaptchaField()
-    remember_me = BooleanField(_l('Remember Me'))
-    submit = SubmitField(_l('Sign in'))
+    remember_me = BooleanField(_l('Remember Me'),\
+    render_kw={
+    'type': 'checkbox',
+    'class': 'custom-control-input',
+    'custom-control-label': 'pass'
+    })
+    submit = SubmitField(_l('Sign in'),\
+    render_kw={
+    'class': "btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+    })
 
 class FirstRegistrationForm(FlaskForm):
     username = StringField(_l("Username"), validators=[DataRequired()])

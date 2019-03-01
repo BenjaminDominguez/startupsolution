@@ -19,14 +19,14 @@
     <td><img src="{{ user.avatar(128) }}"></td>
     <td><h4>{{ user.username }}</h4>
       {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-      {% if user.last_seen %}<p>Last seen on: {{ user.last_seen }}</p>{% endif %}
+      {% if user.last_seen %}<p>Last seen on: {{ moment(user.last_seen).format('LLL') }} {% endif %}</p>
     </td>
   </tr>
 </table>
 {% endif %}
 {% if current_user == user %}
 {% if not profile_pic %}
-<a href="{{ url_for('upload_profile_pic') }}">Upload a profile pic</a>
+<a href="{{ url_for('freelancer.upload_profile_pic') }}">Upload a profile pic</a>
 {% endif %}
 {% else %}
 <a href="#">Message User</a>
@@ -34,16 +34,16 @@
 <div class="row"><br></div>
 <ul class="nav nav-pills">
   <li class="nav item">
-    <a class="nav-link {% if home_active %}active{% endif %}" href= "{{ url_for('user', username=user.username)}}">User home</a>
+    <a class="nav-link {% if home_active %}active{% endif %}" href= "{{ url_for('freelancer.user', username=user.username)}}">User home</a>
   </li>
   <li class="nav item">
-    <a class="nav-link {% if current_jobs_active %}active{% endif %}" href= "{{ url_for('current_jobs', username=user.username)}}">Current Jobs</a>
+    <a class="nav-link {% if current_jobs_active %}active{% endif %}" href= "{{ url_for('freelancer.current_jobs', username=user.username)}}">Current Jobs</a>
   </li>
   <li class="nav item">
     <a class="nav-link {% if messages_active %}active{% endif %}" href="#">Messages </a>
   </li>
   <li class="nav item">
-    <a class="nav-link {% if edit_active %}active{% endif %}" href="{{ url_for('edit_profile', username=current_user.username) }}">Edit profile</a>
+    <a class="nav-link {% if edit_active %}active{% endif %}" href="{{ url_for('freelancer.edit_profile', username=current_user.username) }}">Edit profile</a>
   </li>
 </ul>
 <br>
