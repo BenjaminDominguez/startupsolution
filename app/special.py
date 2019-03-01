@@ -2,6 +2,8 @@ from flask_login import current_user
 from functools import wraps
 from flask import render_template
 from flask_babel import lazy_gettext as _l
+from app.models import User
+
 
 """
 roles_required decorator restricts access to certain views (web pages)
@@ -33,7 +35,18 @@ def l18n_tuples(list):
     return tuple(zip(list, list))
 
 """
-Checks if the employer is the actual employer
+Ranks freelancers by score
 """
-def company_admin_required():
-    pass
+def rank_freelancers():
+    return [u.calculate_score() for u in User.query.all()].sort(reverse=True)
+
+"""
+
+Checks if the user is an admin of the company
+
+"""
+
+def company_admin_required(view):
+    @wraps(view)
+    def decorated_view():
+        pass

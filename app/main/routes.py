@@ -31,6 +31,11 @@ def freelancers_available():
     freelancers = most_recently_active.items,\
     next_url=next_url, prev_url=prev_url)
 
+@bp.route('/freelancers/ranked')
+def freelancers_ranked():
+    ranked_freelancers = [u.calculate_score() for u in User.query.all()].sort(reverse=True)
+    return "pass"
+
 @bp.route('/jobs')
 @login_required
 def jobs_available():

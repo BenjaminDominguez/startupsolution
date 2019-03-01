@@ -1,110 +1,201 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- required meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- BOOTSTRAP CORE CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/brands.css" integrity="sha384-BKw0P+CQz9xmby+uplDwp82Py8x1xtYPK3ORn/ZSoe6Dk3ETP59WCDnX+fI1XCKK" crossorigin="anonymous">
-  <title>
-    {% if title %}
-      {{ title }}
-    {% else %}
-      Freeline
-    {% endif %}
-  </title>
+  {% if title %}
+  <title>{{ title }}</title>
+  {% else %}
+  <title>Freeline</title>
+  {% endif %}
+<!--Favicon-->
+  <link rel='shortcut icon' href='favicon.ico'>
+<!-- Front CSS -->
+  <link rel='stylesheet' href="{{ url_for('static', filename='front/assets/css/theme.css')}}">
+<!-- Navbar -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='front/assets/vendor/hs-megamenu/src/hs.megamenu.css')}}">
+<!-- Mobile responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<!-- NAVBAR -->
+{% block topbar %}
 
+{% endblock topbar %}
 {% block navbar %}
-<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light" style="background-color: #1E90FF;">
-  <a class="navbar-brand" href="{{ url_for('main.index') }}">
-  <!--<img src="static/database_files/Logo.png" width="30" height="30" class="d-inline-block align-top" alt="">-->
-    freeline</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-<div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('main.index') }}">Home <span class="sr-only">(current)</span></a>
-      </li>
-<!-- if the current user is not logged in, show them the login tab, else, show them the logout tab -->
-      {% if current_user.is_anonymous %}
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
-      </li>
-      {% else %}
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
-      </li>
-      {% endif %}
-<!----------------------------------------------------------->
-{% if current_user.is_authenticated %}
-{% if current_user.employer() %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dashboard
+<header id="headerWithMegaMenu" class="u-header">
+  <div class="u-header__section">
+    <div id="logoAndNavWithMegaMenu" class="container">
+      <!-- Nav -->
+      <nav class="js-mega-menu navbar navbar-expand-md u-header__navbar u-header__navbar--no-space">
+        <!-- Logo -->
+        <a class="navbar-brand u-header__navbar-brand u-header__navbar-brand-center" href="{{ url_for('main.index') }}" aria-label="Freeline">
+          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="46px" height="46px" viewBox="0 0 46 46" xml:space="preserve" style="margin-bottom: 0;">
+            <path fill="#3F7DE0" opacity=".65" d="M23,41L23,41c-9.9,0-18-8-18-18v0c0-9.9,8-18,18-18h11.3C38,5,41,8,41,11.7V23C41,32.9,32.9,41,23,41z"/>
+            <path class="fill-info" opacity=".5" d="M28,35.9L28,35.9c-9.9,0-18-8-18-18v0c0-9.9,8-18,18-18l11.3,0C43,0,46,3,46,6.6V18C46,27.9,38,35.9,28,35.9z"/>
+            <path class="fill-primary" opacity=".7" d="M18,46L18,46C8,46,0,38,0,28v0c0-9.9,8-18,18-18h11.3c3.7,0,6.6,3,6.6,6.6V28C35.9,38,27.9,46,18,46z"/>
+            <path class="fill-white" d="M17.4,34V18.3h10.2v2.9h-6.4v3.4h4.8v2.9h-4.8V34H17.4z"/>
+          </svg>
+          <span class="u-header__navbar-brand-text">Front</span>
         </a>
-        {% with company_name = current_user.startup.first().company_name %}
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{url_for('employer.company', company_name=company_name)}}">Employer page</a>
-          <a class="dropdown-item" href="{{url_for('employer.new_job_posting', company_name=company_name)}}">Post a new job</a>
-          <a class='dropdown-item' href="#">Manage current jobs</a>
-        {% endwith %}
-      </div>
-      </li>
-{% elif current_user.freelancer() %}
-<li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dashboard
-  </a>
-  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-    <a class="dropdown-item" href="{{ url_for('freelancer.user', username=current_user.username) }}">Profile page</a>
-    <a class="dropdown-item" href="{{ url_for('main.jobs_available')}}">Browse jobs available</a>
-    <a class='dropdown-item' href="{{ url_for('freelancer.current_jobs', username=current_user.username)}}">Manage current jobs</a>
-</div>
-</li>
-{% endif %}
-{% endif %}
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('main.freelancers_available')}}">Freelancers available</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('main.jobs_available')}}">Projects available</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="{{ url_for('main.about_us')}}">About us</a>
-</li>
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-</div>
-</nav>
-{% endblock %}
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-{{ moment.include_moment() }}
+        <!-- End Logo -->
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="row"><br></div>
-    {% for message in messages %}
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
-  <p> {{ message }} </p>
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-</div>
-    {% endfor %}
-{% endif %}
-{% endwith %}
+        <!-- Responsive Toggle Button -->
+        <button type="button" class="navbar-toggler btn u-hamburger"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                aria-controls="navBarWithMegaMenu"
+                data-toggle="collapse"
+                data-target="#navBarWithMegaMenu">
+          <span id="hamburgerTriggerWithMegaMenu" class="u-hamburger__box">
+            <span class="u-hamburger__inner"></span>
+          </span>
+        </button>
+        <!-- End Responsive Toggle Button -->
+
+        <!-- Navigation -->
+        <div id="navBarWithMegaMenu" class="collapse navbar-collapse u-header__navbar-collapse">
+          <ul class="navbar-nav u-header__navbar-nav">
+            <!-- Link -->
+            <li class="nav-item u-header__nav-item">
+              <a class="nav-link u-header__nav-link" href="#">Post a project</a>
+            </li>
+            <!-- End Link -->
+
+            <!-- Link -->
+            <li class="nav-item u-header__nav-item">
+              <a class="nav-link u-header__nav-link" href="#">Before getting started</a>
+            </li>
+            <!-- End Link -->
+
+            <!-- Nav Item -->
+            <li class="nav-item hs-has-mega-menu u-header__nav-item"
+                data-event="click"
+                data-animation-in="fadeIn"
+                data-animation-out="fadeOut"
+                data-position="left">
+              <a id="linkMegaMenuWithMegaMenu" class="nav-link u-header__nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false">
+
+                Projects available
+
+              </a>
+
+              <!-- Nav Item - Mega Menu -->
+              <div class="hs-mega-menu w-100 u-header__sub-menu" aria-labelledby="linkMegaMenuWithMegaMenu" data-event="click">
+                <div class="row u-header__mega-menu-wrapper">
+                  <div class="col-sm-3 mb-3 mb-sm-0">
+                    <span class="u-header__sub-menu-title">Mobile App Developement</span>
+                    <ul class="u-header__sub-menu-nav-group mb-3">
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">iOS Developement (Games)</a></li>
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">iOS Developement (Basic)</a></li>
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Android Developement (Java)</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="col-sm-3 mb-3 mb-sm-0">
+                    <span class="u-header__sub-menu-title">Web Developement</span>
+                    <ul class="u-header__sub-menu-nav-group">
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Python (Django and Flask)</a></li>
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Full-Stack Javascript (Node.JS)</a></li>
+                      <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Front end Developement</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <!-- End Nav Item - Mega Menu -->
+            </li>
+            <!-- End Nav Item -->
+
+            <!-- Link -->
+            <li class="nav-item u-header__nav-item active">
+              <a class="nav-link u-header__nav-link" href="#">Active link</a>
+            </li>
+            <!-- End Link -->
+
+            <!-- Link -->
+            <li class="nav-item u-header__nav-item">
+              <a class="nav-link u-header__nav-link disabled" href="#">Disabled</a>
+            </li>
+            <!-- End Link -->
+
+            <!-- Button -->
+            <li class="nav-item u-header__nav-last-item">
+              <a class="btn btn-sm btn-primary transition-3d-hover" href="{{ url_for('auth.login')}}" target="_blank">
+                Login or register
+              </a>
+            </li>
+            <!-- End Button -->
+          </ul>
+        </div>
+        <!-- End Navigation -->
+      </nav>
+      <!-- End Nav -->
+    </div>
+  </div>
+</header>
+{% endblock navbar %}
 {% block content %}
 
-<!-- adding javascript from bootstrap, needs to be added at the end of the page -->
-
 {% endblock %}
+{% block scripts %}
+<!-- JS Global Compulsory -->
+<script src="{{ url_for('static', filename='front/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/popper.js/dist/umd/popper.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/bootstrap/bootstrap.min.js')}}"></script>
+
+<!-- JS Implementing Plugins -->
+<script src="{{ url_for('static', filename='front/assets/vendor/hs-megamenu/src/hs.megamenu.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/typed.js/lib/typed.min.js')}}"></script>
+<!----------------------->
+
+<!-- JS Front -->
+<script src="{{ url_for('static', filename='front/assets/js/hs.core.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.header.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.unfold.js')}}"></script>
+
+<!------------------------>
+<!-- JS Plugins Init-->
+<script>
+  $(document).on('ready', function () {
+    // initialization of header
+    $.HSCore.components.HSHeader.init($('#header'));
+  });
+</script>
+
+
+<script>
+  $(window).on('load', function () {
+    // initialization of HSMegaMenu component
+    $('.js-mega-menu').HSMegaMenu({
+      event: 'hover',
+      pageContainer: $('.container'),
+      breakpoint: 767.98,
+      hideTimeOut: 0
+    });
+  });
+</script>
+
+
+<script>
+  $(document).on('ready', function () {
+    // initialization of unfold component
+    $.HSCore.components.HSUnfold.init($('[data-unfold-target]'));
+  });
+</script>
+
+<script>
+  $(document).on('ready', function () {
+    // initialization of text animation (typing)
+    var typed = new Typed(".u-text-animation.u-text-animation--typing", {
+      strings: [" earn equity in new startups.", "engineer your business idea.", "win more business."],
+      typeSpeed: 60,
+      loop: true,
+      backSpeed: 25,
+      backDelay: 1500
+    });
+  });
+</script>
+
+{% endblock scripts %}
+
+</body>
+</html>

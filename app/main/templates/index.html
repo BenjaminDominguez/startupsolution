@@ -1,207 +1,51 @@
 {% extends "base.html" %}
 {% block content %}
-<!--Custom stylesheet from Bootstrap snippets-->
-<link href="{{ url_for('static', filename='css/landing-page.min.css')}}" rel="stylesheet">
-<!-- Custom stylesheets outsourced -->
-<link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
-<link href="{{ url_for('static', filename='vendor/simple-line-icons/css/simple-line-icons.css')}}" rel="stylesheet" type="text/css">
-<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+<!---=====MAIN CONTENT - START OF THE LANDING PAGE====-->
 
-  <header class="masthead text-white text-center">
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-9 mx-auto">
-          <h1 class="mb-5">Welcome to freeline, the world's only work-for-equity platform.
-          </h1>
-          <h1 class="mb-5">Earn your share now by signing up below</h1>
-        </div>
-        <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
-          <form>
-            <div class="form-row">
-              <div class="col-12 col-md-9 mb-2 mb-md-0">
-                <input type="email" class="form-control form-control-lg" placeholder="Enter your email...">
-              </div>
-              <div class="col-12 col-md-3">
-                <button type="submit" class="btn btn-block btn-lg btn-primary">Sign up!</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-</header>
-
-  <!-- Icons Grid -->
-  <section class="features-icons bg-light text-center">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
-            <div class="features-icons-icon d-flex">
-              <i class="icon-screen-desktop m-auto text-primary"></i>
-            </div>
-            <h3>Find a Project</h3>
-            <p class="lead mb-0">Look through our list of projects for freelancers</p>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3">
-            <div class="features-icons-icon d-flex">
-              <i class="icon-wallet m-auto text-primary"></i>
-            </div>
-            <h3>Cash or Equity?</h3>
-            <p class="lead mb-0">Negotiate payment in the form of cash or equity.</p>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="features-icons-item mx-auto mb-0 mb-lg-3">
-            <div class="features-icons-icon d-flex">
-              <i class="icon-rocket m-auto text-primary"></i>
-            </div>
-            <h3>Get to work!</h3>
-            <p class="lead mb-0">Get started on getting partial ownership in the next big startup!</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Image Showcases -->
-  <section class="showcase">
-    <div class="container-fluid p-0">
-      <div class="row no-gutters">
-
-        <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image:url('static/img/header-photo.jpg');"></div>
-        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-          <h2>Get paid with cash, equity, or both.</h2>
-          <p class="lead mb-0">The world's only work-for-equity site: as a freelancer you get the opportunity to become partial owners in new and
-            fresh startups. As an employer, you get the chance to finally make your ideas come to life.
+<main id="content" role="main">
+  <!--HERO SECTION-->
+  <!-- CONTENT -->
+  <div class="d-lg-flex position-relative">
+    <div class="container d-lg-flex align-items-lg-center space-top-2 space-top-md-5 space-lg-0 min-height-lg-100vh">
+      <div class="row w-100">
+        <div class="col-lg-5">
+          <h1 class="display-4 font-size-md-down-5 mb-3">Welcome to Freeline</h1>
+          <p>Get the opporunity to
+          <strong class="u-text-animation u-text-animation--typing"></strong>
           </p>
-        </div>
-      </div>
-      <div class="row no-gutters">
-        <div class="col-lg-6 text-white showcase-img" style="background-image: url('static/img/bg-showcase-2.jpg');"></div>
-        <div class="col-lg-6 my-auto showcase-text">
-          <h2>Fast, efficient work flow.</h2>
-          <p class="lead mb-0">
-            With freeline's matching system, find projects that suit your expertise almost instantly, and get ensured secure fast payment
-            through our escrow partner.
-          </p>
-        </div>
-      </div>
-      <div class="row no-gutters">
-        <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('static/img/bg2.jpg');"></div>
-        <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-          <h2>Get started now.</h2>
-          <p class="lead mb-0">
-            There will be some sort of unique quote here that I will write. I cannot think of one yet. So the purpose of this long sentence is to fill space.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="testimonials text-center bg-light">
-    <div class="container">
-      <h2 class="mb-5">Meet some of our top freelancers</h2>
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <img class="img-fluid rounded-circle mb-3" src="{{url_for('static', filename='img/testimonials-1.jpg')}}" alt="">
-            <h5>Margaret E.</h5>
-            <p class="font-weight-light mb-0">IOS Developement</p>
+          <p>Connecting companies with freelancers.
+            Options to work for cash and/or equity today.
+              Earn your share today and get started.</p>
+          <div class="d-flex align-items-center flex-wrap">
+              <a class="btn btn-soft-primary btn-wide transition-3d-hover" href="{{ url_for('auth.login') }}">Register</a>
           </div>
         </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <img class="img-fluid rounded-circle mb-3" src="{{url_for('static', filename='img/testimonials-2.jpg')}}" alt="">
-            <h5>Fred S.</h5>
-            <p class="font-weight-light mb-0">Web Developement - Full Stack</p>
+    </div>
+  <!-- END CONTENT -->
+  <div id="SVGMainHero" class="col-lg-9 col-xl-7 d-none d-lg-block position-absolute top-0 right-0 pr-0" style="margin-top: 105.6px;">
+            <figure class="ie-main-hero">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1374.7 1083.6" style="enable-background:new 0 0 1374.7 1083.6;" xml:space="preserve" class="injected-svg js-svg-injector" data-img-paths="[
+                     {&quot;targetId&quot;: &quot;#SVGMainHeroImg1&quot;, &quot;newPath&quot;: &quot;../../assets/img/750x750/img2.jpg&quot;}
+                   ]" data-parent="#SVGMainHero">
+  <style type="text/css">
+  	.main-hero-0{fill:#377dff;}
+  </style>
+  <path class="main-hero-0 fill-primary" opacity=".05" d="M285.2,170.1c-94.5,8.6-181.2,57.4-235.9,134.8C-34.7,423.6-54.5,621.5,349,879.8  c636.5,407.6,600,9.3,591.9-47.4c-0.8-5.5-1.4-11.1-2-16.6l-34.2-374.1C888.4,262,729.2,129.6,549.4,146L285.2,170.1z"></path>
+  <g>
+  	<defs>
+  		<path id="mainHeroBlock1" d="M1374.7,0H687.6l-278,279.7c-150,150.9-148.1,395.3,4.4,543.8l0,0C554.1,960,774.9,968.7,925.4,843.6    l449.3-373.4V0z"></path>
+  	</defs>
+  	<clipPath id="mainHeroBlock2">
+  		<use xlink:href="#mainHeroBlock1" style="overflow:visible;"></use>
+  	</clipPath>
+  	<g transform="matrix(1 0 0 1 0 0)" style="clip-path:url(#mainHeroBlock2);">
+  		<!-- Apply your (750px width to 750px height) image here -->
+  		<image id="SVGMainHeroImg1" style="overflow:visible;" width="750" height="750" xlink:href="static/img/bg2.jpg" transform="matrix(1.4462 0 0 1.4448 290.09 0)"></image>
+  	</g>
+  </g>
+  </svg>
+            </figure>
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
-            <img class="img-fluid rounded-circle mb-3" src="{{url_for('static', filename='img/testimonials-3.jpg')}}" alt="">
-            <h5>Sarah W.</h5>
-            <p class="font-weight-light mb-0">UX/UI </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Call to Action -->
-  <section class="call-to-action text-white text-center">
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-9 mx-auto">
-          <h2 class="mb-4">Subscribe to our newsletter!</h2>
-        </div>
-        <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
-          <form>
-            <div class="form-row">
-              <div class="col-12 col-md-9 mb-2 mb-md-0">
-                <input type="email" class="form-control form-control-lg" placeholder="Enter your email...">
-              </div>
-              <div class="col-12 col-md-3">
-                <button type="submit" class="btn btn-block btn-lg btn-primary">Sign up!</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer bg-light">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
-          <ul class="list-inline mb-2">
-            <li class="list-inline-item">
-              <a href="#">About</a>
-            </li>
-            <li class="list-inline-item">&sdot;</li>
-            <li class="list-inline-item">
-              <a href="#">Contact</a>
-            </li>
-            <li class="list-inline-item">&sdot;</li>
-            <li class="list-inline-item">
-              <a href="#">Terms of Use</a>
-            </li>
-            <li class="list-inline-item">&sdot;</li>
-            <li class="list-inline-item">
-              <a href="#">Privacy Policy</a>
-            </li>
-          </ul>
-          <p class="text-muted small mb-4 mb-lg-0">&copy; Freeline 2019. All Rights Reserved.</p>
-        </div>
-        <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
-          <ul class="list-inline mb-0">
-            <li class="list-inline-item mr-3">
-              <a href="#">
-                <i class="fab fa-facebook fa-2x fa-fw"></i>
-              </a>
-            </li>
-            <li class="list-inline-item mr-3">
-              <a href="#">
-                <i class="fab fa-twitter-square fa-2x fa-fw"></i>
-              </a>
-            </li>
-            <li class="list-inline-item">
-              <a href="#">
-                <i class="fab fa-instagram fa-2x fa-fw"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
-
+<!-- Icon Block Section -->
 
 {% endblock %}

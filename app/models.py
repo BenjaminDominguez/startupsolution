@@ -7,6 +7,7 @@ import os
 import base64
 import onetimepass
 from hashlib import md5
+from app import moment
 """
 Using Jinja2 to integrate database references within HTML
 ------------------------------------------------------------------
@@ -203,6 +204,11 @@ class User(db.Model, UserMixin):
         else:
             return 'Last seen {0} {1} ago'.format(x[1], x[0])
 
+    def is_admin_for_the_company(self, company_name):
+        bool = (Startup.query.filter_by(Startup.admin.any(username=self.username)).first())
+        return bool
+
+
     def info(self):
         if self.employer():
             return '<Employer {0}>'.format(self.username)
@@ -216,8 +222,19 @@ class User(db.Model, UserMixin):
         return Message.query.filter_by(recipient=self).filter(
         Message.timestamp > last_read_time).count()
 
-    def calculate_ranking(self):
-        pass
+    def calculate_score(self):
+        score = 0
+        score_weights = {
+        1: -5,
+        2: -4,
+        3: -1,
+        4: 1,
+        5: 2
+        }
+        for review.stars in self.reviews:
+            score += score_weights[review.stars]
+        return score
+
 
 
     __repr__ = info
@@ -318,10 +335,8 @@ class Startup(UserMixin, db.Model):
     def write_review(self, review):
         self.reviews.append(review)
 
-    def info(self):
+    def __repr__(self):
         return "<Startup {0}>".format(self.company_name)
-
-    __repr__ = info
 
 class Job(db.Model):
 
@@ -344,24 +359,11 @@ class Job(db.Model):
         self.posted_on = now
 
     def time_elapsed(self):
-        try:
-            time = datetime.utcnow() - self.posted_on
-        except TypeError:
-            return ('hours', 5)
-        hours = time.days*24 + time.seconds/3600
-        if hours > 24:
-            return ('days', int(round(time.days)))
-        elif hours < 24 and hours > 1:
-            return ('hours', int(round(hours)))
-        elif hours < 1:
-            return ('minutes', int(round(time.seconds/60, 0)))
-        elif hours < 1 and time.seconds/60 < 1:
-            return ('just now', 'just now')
+        pass
 
-    def info(self):
+    def __repr__(self):
         return '<Job {0}>'.format(self.name)
 
-    __repr__ = info
 
 class Reviews(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -387,12 +389,10 @@ class PastEmployments(db.Model):
     location = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def info(self):
+    def __repr__(self):
         return 'Past employment working for {0}'.format(
         'company_worked_for'
         )
-
-    __repr__ = info
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -401,5 +401,5 @@ class Message(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
-    def info(self):
+    def __repr__(self):
         return '<Message {}>'.format(self.body)
