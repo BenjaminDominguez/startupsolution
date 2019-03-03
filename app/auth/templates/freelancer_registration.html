@@ -1,11 +1,61 @@
 {% extends "base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
-    <h1>Finish registering</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
-        </div>
-    </div>
+{% block app_content %}
+<main id="content" role="main">
+<div class="container space-2">
+  <div class="col-md-6 mb-3 mb-md-0">
+    <div class="mb-7">
+          <h1 class="h3 text-primary font-weight-normal mb-0">Welcome to <span class="font-weight-semi-bold">Freeline</span></h1>
+          <p>Fill out the form below to get started.</p>
+  <form method='post' novalidate="novalidate">
+
+    {{ form.hidden_tag() }}
+
+<div class="row"><p>   Basic login details</p></div>
+  <div class="form-group">
+    {{ form.email(**{'class': 'form-control', 'placeholder': 'Enter your work email', 'aria-label': 'Enter your work email'})}}
+  </div>
+
+  <div class="form-group">
+    {{ form.password(**{'class': 'form-control', 'placeholder': 'Enter a password', 'aria-label': 'Enter a password'})}}
+  </div>
+
+  <div class="form-group">
+    {{ form.repeat_password(**{'class': 'form-control', 'placeholder': 'Repeat your password', 'aria-label': 'Repeat your password'})}}
+  </div>
+
+  <div class="row"><br></div>
+  <div class="row"><p>Basic personal details</p></div>
+
+  <div class="form-group">
+    {{ form.first(**{'class': 'form-control', 'placeholder': 'Enter your first name', 'aria-label': 'Enter your first name'})}}
+  </div>
+
+  <div class="form-group">
+    {{ form.last(**{'class': 'form-control', 'placeholder': 'Enter your last name', 'aria-label': 'Enter your last name'})}}
+  </div>
+
+  <div class="row"><p>Work details</p></div>
+
+  <!-- Range Slider -->
+<input class="js-range-slider" type="text"
+       data-extra-classes="u-range-slider u-range-slider-indicator"
+       data-type="single"
+       data-hide-from-to="false"
+       data-min="0"
+       data-max="40"
+       data-from="0">
+<!-- End Range Slider -->
+
+
+  </form>
+  <div class="row"><p> Enter any skills you have and hit enter</p></div>
+  <div class="u-tagsinput">
+  <input type="text" value="HTML5, CSS3, JavaScript, jQuery" data-role="tagsinput">
+  </&div>
+
+</div>
+</div>
+</div>
+</main>
 {% endblock %}

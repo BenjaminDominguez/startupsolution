@@ -1,18 +1,12 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block content %}
-<div class="container">
-  <div class="row"><br></div>
-      <h3>Register</h3>
-      <form class="form form-horizontal" method="post" role="form">
-        {{ form.hidden_tag() }}
-        {{ wtf.form_errors(form, hiddens="only") }}
-        {{ wtf.form_field(form.username) }}
-        {{ wtf.form_field(form.email) }}
-        {{ wtf.form_field(form.password)}}
-        {{ wtf.form_field(form.repeat_password)}}
-        <button type="submit" class="btn btn-outline-primary btn-sm">
-        {{ wtf.form_field(form.submit, form_type='submit')}}
-        </button>
-</div>
+{% block app_content %}
+<main id="content" role="main">
+    <div class="container space-2">
+        <div class="mb-7">
+          <h2 class="h3 text-primary font-weight-normal mb-0">Are you an employer or a freelancer? </h2>
+        </div>
+        <a href="{{ url_for('auth.employer_registration')}}" class="btn btn-primary">Employer</a>
+        <a href="{{ url_for('auth.freelancer_registration')}}" class="btn btn-indigo">Freelancer</a>
+    </div>
+</main>
 {% endblock %}

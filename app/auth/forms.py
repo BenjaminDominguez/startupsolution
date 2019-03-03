@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField,\
 SubmitField, SelectField, DateTimeField, TextAreaField
+from wtforms.fields import RadioField
 from wtforms.validators import ValidationError, DataRequired, DataRequired, Email,\
 EqualTo, Length
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -23,42 +24,21 @@ hours_a_week = ['Less than 10 hours a week', '10 to 20 hours a week', '20 to 30 
 ef = ['Employer', 'Freelancer']
 
 class LoginForm(FlaskForm):
-    username = StringField(_l('Username or email'), validators=[DataRequired()],\
-    render_kw={
-    'type': 'username',
-    'id': 'inputEmail',
-    'class': 'form-control',
-    'placeholder': 'Username',
-    'required': True,
-    'autofocus': True
-    })
-    password = PasswordField(_l('Password'), validators=[DataRequired()],\
-    render_kw={
-    'type': 'password',
-    'id': 'inputPassword',
-    'class': 'form-control',
-    'placeholder': 'Password',
-    'required': True,
-    'autofocus': True
-    })
-    # recaptcha = RecaptchaField()
-    remember_me = BooleanField(_l('Remember Me'),\
-    render_kw={
-    'type': 'checkbox',
-    'class': 'custom-control-input',
-    'custom-control-label': 'pass'
-    })
-    submit = SubmitField(_l('Sign in'),\
-    render_kw={
-    'class': "btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
-    })
+    email = StringField(_l('Email'), validators=[DataRequired(), Email()])
+    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    submit = SubmitField(_l('Sign in'))
 
-class FirstRegistrationForm(FlaskForm):
-    username = StringField(_l("Username"), validators=[DataRequired()])
+class FreelancerRegistrationForm(FlaskForm):
     email = StringField(_l("Email"), validators=[DataRequired(), Email()])
     password = PasswordField(_l("Password"), validators=[DataRequired()])
     repeat_password = PasswordField(_l("Repeat password"), validators=[DataRequired()\
     , EqualTo('password')], render_kw={'placeholder': _l("Repeat your password")})
+    first = StringField(_l("First name", validators=[DataRequired()]))
+    last = StringField(_l("Last name", validators=[DataRequired()]))
+    occupation = SelectField(_l("What job do you do?"), choices=l18n_tuples(job_types), validators=[DataRequired()])
+    hours_a_week = SelectField(_l("How many hours a week are you available?"), choices=l18n_tuples(hours_a_week), validators=[DataRequired()])
+    about_me = TextAreaField(_l('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.'), validators=[Length(min=0, max=1000)])
+    submit = SubmitField(_l("Finish Registration for now!"))
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -72,11 +52,14 @@ class FirstRegistrationForm(FlaskForm):
             raise ValidationError(_('Email taken. Please select a different one'))
 
 
-class SecondRegistrationForm(FlaskForm):
-    role = SelectField(_l('Are you an employer or freelancer?'), choices=l18n_tuples(ef))
-    submit = SubmitField(_l('Submit'))
 
 class EmployerRegistrationForm(FlaskForm):
+    email = StringField(_l("Email"), validators=[DataRequired(), Email()])
+    password = PasswordField(_l("Password"), validators=[DataRequired()])
+    repeat_password = PasswordField(_l("Repeat password"), validators=[DataRequired()\
+    , EqualTo('password')], render_kw={'placeholder': _l("Repeat your password")})
+    first = StringField(_l("First name", validators=[DataRequired()]))
+    last = StringField(_l("Last name", validators=[DataRequired()]))
     company_name = StringField(_l("Company Name"), validators=[DataRequired()])
     state_of_incorporation = SelectField(_l("What's your state of incorporation?"), choices=l18n_tuples(states), validators=[DataRequired()])
     company_type = SelectField(_l("What type of company are you?"), choices=l18n_tuples(company_types), validators=[DataRequired()])
@@ -92,11 +75,3 @@ class EmployerRegistrationForm(FlaskForm):
         name = Startup.query.filter_by(company_name=company_name.data).first()
         if name is not None:
             raise ValidationError(_("Company name already taken. Try again?"))
-
-class FreelancerForm(FlaskForm):
-    first = StringField(_l("First name"), validators=[DataRequired()])
-    last = StringField(_l("Last name"), validators=[DataRequired()])
-    occupation = SelectField(_l("What job do you do?"), choices=l18n_tuples(job_types), validators=[DataRequired()])
-    hours_a_week = SelectField(_l("How many hours a week are you available?"), choices=l18n_tuples(hours_a_week), validators=[DataRequired()])
-    about_me = TextAreaField(_l('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.'), validators=[Length(min=0, max=1000)])
-    submit = SubmitField(_l("Finish Registration for now!"))

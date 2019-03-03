@@ -2,7 +2,8 @@ from flask_login import current_user
 from functools import wraps
 from flask import render_template
 from flask_babel import lazy_gettext as _l
-from app.models import User
+from app.models import User, Job
+from app import db
 
 
 """
@@ -50,3 +51,13 @@ def company_admin_required(view):
     @wraps(view)
     def decorated_view():
         pass
+
+"""
+Rank the top 4 categories,
+and return a dictionary of the top 4 with categories with the top 3 subcategories in each category
+
+Jobs have multiple categories, and categories have multiple subcategories
+"""
+def top4cat_top3sub():
+    default = {}
+    return default

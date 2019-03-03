@@ -4,8 +4,8 @@ from flask_login import login_user, logout_user, current_user
 from flask_babel import _
 from app import db
 from app.auth import bp
-from app.auth.forms import LoginForm, FirstRegistrationForm, SecondRegistrationForm,\
-EmployerRegistrationForm, FreelancerForm
+from app.auth.forms import LoginForm, FreelancerRegistrationForm,\
+EmployerRegistrationForm
 from app.models import User, Job, Role, Startup
 from datetime import datetime
 
@@ -19,16 +19,16 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     form = LoginForm()
-    #post request
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         if user is None:
-            flash(_('Username does not exist'))
+            flash(_('Email not currently registed with freeline'))
             return redirect(url_for('auth.login'))
         elif user.check_password(str(form.password.data)) is False:
             flash(_("Incorrect password. Try again."))
             return redirect(url_for('auth.login'))
-        login_user(user, remember=form.remember_me.data)
+        #have to add back remember me functionality later
+        login_user(user)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
@@ -38,40 +38,16 @@ def login():
 
 @bp.route('/register', methods=['GET', 'POST'])
 def start_registration():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    form = FirstRegistrationForm()
-    if form.validate_on_submit():
-        """
-        This should not be added first
-        """
-        user = User(username = form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        user.registration_date = datetime.utcnow()
-        db.session.add(user)
-        db.session.commit()
-        """
-        This doesn't work.. how do we automatically log in a user after they have logged in?
-        """
-        return redirect(url_for('auth.second_registration', user=user.username))
-    return render_template('start_registration.html', form=form)
+    return render_template('start_registration.html')
 
 @bp.route('/regiser/2', methods=['GET', 'POST'])
-def second_registration():
+def freelancer_registration():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
-    user = User.query.filter_by(username=request.args['user']).first()
-    form = SecondRegistrationForm()
+    form = FreelancerRegistrationForm()
     if form.validate_on_submit():
-        role = Role.query.filter_by(name=form.role.data).first()
-        user.roles.append(role)
-        db.session.add(role)
-        db.session.commit()
-        if user.employer():
-            return redirect(url_for('auth.employer_registration', user=user.username))
-        elif user.freelancer():
-            return redirect(url_for('auth.freelancer_registration', user=user.username))
-    return render_template('second_registration.html', title='Which are you?', form=form)
+        pass
+    return render_template('freelancer_registration.html', form=form)
 
 @bp.route('/register/employer', methods=['GET', 'POST'])
 def employer_registration():
@@ -109,21 +85,6 @@ def employer_registration():
         flash(_("Successfully registered your company %(company_name)s!", company_name=startup.company_name))
         return redirect(url_for('auth.login'))
     return render_template('employer_registration.html', title='Register your company!', form=form)
-
-@bp.route('/register/freelancer', methods=['GET', 'POST'])
-def freelancer_registration():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
-    user = User.query.filter_by(username=request.args['user']).first()
-    form = FreelancerForm()
-    if form.validate_on_submit():
-        user.first, user.last, user.occupation, user.about_me, user.hours_a_week = form.first.data, \
-        form.last.data, form.occupation.data, form.about_me.data, form.hours_a_week.data
-        db.session.commit()
-        login_user(user)
-        flash(_("Successfully created profile!"))
-        return redirect(url_for('auth.login'))
-    return render_template('freelancer_registration.html', title='Register!', form=form)
 
 @bp.route('/github')
 def login_with_github():

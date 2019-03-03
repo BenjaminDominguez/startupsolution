@@ -9,43 +9,6 @@ import onetimepass
 from hashlib import md5
 from app import moment
 """
-Using Jinja2 to integrate database references within HTML
-------------------------------------------------------------------
-s = Startupcreator(username='user', first='ben', last='dominguez')
-#creating an instance of a class Startupcreator
-
-#to access the atrributes of an instance of the class for use in a html file with Jinja2:
-                    <p>{{ s.username }}</p>
-
-                        is equivalent to:
-
-                    <p>      user       </p>
-So as long as you know the column names for the database, you can name the "instance" anything you like
-and I'll pass it in through the backend as a variable.
-
-all_devs = Developers.query.all()
-This returns a list of all the developers in the database.
-to iterate through the list of developers in html (For example, if you needed to return all developers available on a certain page)
-    {% for dev in all_devs %}
-    <div>
-        <p> dev.username: dev.first dev.last </p>
-    </div>
-    {% endfor %}
-
-    would be equivalent to:
-    <div>
-        <p>user1: ben dominguez</p>
-    </div>
-    <div>
-        <p>user2: carlos nunez</p>
-    </div>
-
-    and on and on until we've gone through the entire query.
-
-You can create for loops like this and as long as the queries are reasonable, I can integrate it through the back end
-and pass in the appropriate list to iterate through for all_devs
-
-
 Jinja2 documentation
 --------------------
 http://jinja.pocoo.org/docs/2.10/
@@ -346,24 +309,66 @@ class Job(db.Model):
     name = db.Column(db.String(64), index=True)
     job_description = db.Column(db.String(1000))
     offer_price = db.Column(db.Integer, index=True)
-    job_type = db.Column(db.String(200), index=True)
     equity_job = db.Column(db.Boolean)
     posted_on = db.Column(db.DateTime)
     estimated_developement_time = db.Column(db.String(40), index=True)
     is_complete = db.Column(db.Boolean)
     startup_id = db.Column(db.Integer, db.ForeignKey('startup.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    cats = db.relationship('Cat', secondary='job_cat')
+    subs = db.relationship('Sub', secondary='job_sub')
+
+    def add_cat(self, cat):
+        if cat not in self.cats:
+            self.cats.append(cat)
+
+    def add_sub_cat(self, subcat):
+        subcats = [sc for sc in [cat.subs for cat in self.cats]]
+        if subcat in subcats:
+            self.subs.append(subcat)
+        else:
+            raise Exception("Subcategory not located in current catgeories of Job")
 
     def post_job_time(self):
         now = datetime.utcnow()
         self.posted_on = now
 
-    def time_elapsed(self):
-        pass
-
     def __repr__(self):
         return '<Job {0}>'.format(self.name)
 
+class Cat(db.Model):
+    __tablename__ = 'cat'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), index=True)
+    subs = db.relationship('Sub', backref='category', lazy='dynamic')
+
+    def assign_sub_cat(self, subcat):
+        if subcat not in self.subcats:
+            self.subs.append(subcat)
+
+    def __repr__(self):
+        return "<Job Category {0}>".format(self.name)
+
+class Sub(db.Model):
+    __tablename__ = 'sub'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), index=True)
+    cat = db.Column(db.Integer, db.ForeignKey('cat.id'))
+
+    def __repr__(self):
+        return "<Job Sub Category {0}>".format(self.name)
+
+class JobCat(db.Model):
+    __tablename__ ='job_cat'
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id', ondelete='CASCADE'))
+    cat_id = db.Column(db.Integer, db.ForeignKey('cat.id', ondelete='CASCADE'))
+
+class JobSub(db.Model):
+    __tablename__ = 'job_sub'
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id', ondelete='CASCADE'))
+    sub_id = db.Column(db.Integer, db.ForeignKey('sub.id', ondelete='CASCADE'))
 
 class Reviews(db.Model):
     id = db.Column(db.Integer, primary_key=True)

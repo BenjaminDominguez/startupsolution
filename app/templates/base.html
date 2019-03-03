@@ -12,14 +12,16 @@
   <link rel='stylesheet' href="{{ url_for('static', filename='front/assets/css/theme.css')}}">
 <!-- Navbar -->
   <link rel="stylesheet" href="{{ url_for('static', filename='front/assets/vendor/hs-megamenu/src/hs.megamenu.css')}}">
-<!-- Mobile responsive -->
+<!-- Font awesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='front/assets/vendor/font-awesome/css/fontawesome-all.min.css')}}">
+<!--Tags Input -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='front/assets/vendor/bootstrap-tagsinput/css/bootstrap-tagsinput.css')}}">
+
+  <!-- Mobile responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 <body>
 <!-- NAVBAR -->
-{% block topbar %}
-
-{% endblock topbar %}
 {% block navbar %}
 <header id="headerWithMegaMenu" class="u-header">
   <div class="u-header__section">
@@ -34,7 +36,7 @@
             <path class="fill-primary" opacity=".7" d="M18,46L18,46C8,46,0,38,0,28v0c0-9.9,8-18,18-18h11.3c3.7,0,6.6,3,6.6,6.6V28C35.9,38,27.9,46,18,46z"/>
             <path class="fill-white" d="M17.4,34V18.3h10.2v2.9h-6.4v3.4h4.8v2.9h-4.8V34H17.4z"/>
           </svg>
-          <span class="u-header__navbar-brand-text">Front</span>
+          <span class="u-header__navbar-brand-text">Freeline</span>
         </a>
         <!-- End Logo -->
 
@@ -60,21 +62,25 @@
             </li>
             <!-- End Link -->
 
+
             <!-- Link -->
-            <li class="nav-item u-header__nav-item">
-              <a class="nav-link u-header__nav-link" href="#">Before getting started</a>
-            </li>
+              <li class="nav-item u-header__nav-item">
+                <a class="nav-link u-header__nav-link" href="#">Discover freelancers</a>
+              </li>
             <!-- End Link -->
 
             <!-- Nav Item -->
             <li class="nav-item hs-has-mega-menu u-header__nav-item"
-                data-event="click"
-                data-animation-in="fadeIn"
+                data-event="hover"
+                data-animation-in="slideInUp"
                 data-animation-out="fadeOut"
-                data-position="left">
-              <a id="linkMegaMenuWithMegaMenu" class="nav-link u-header__nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false">
+                data-position="right"
+                >
+              <a id="slideInUpMegaMenu"
+              class="nav-link u-header__nav-link u-header__nav-link-toggle"
+              href="javascript:;" aria-haspopup="true" aria-expanded="false">
 
-                Projects available
+                Top projects available
 
               </a>
 
@@ -82,7 +88,7 @@
               <div class="hs-mega-menu w-100 u-header__sub-menu" aria-labelledby="linkMegaMenuWithMegaMenu" data-event="click">
                 <div class="row u-header__mega-menu-wrapper">
                   <div class="col-sm-3 mb-3 mb-sm-0">
-                    <span class="u-header__sub-menu-title">Mobile App Developement</span>
+                    <span class="u-header__sub-menu-title">Mobile App Dev</span>
                     <ul class="u-header__sub-menu-nav-group mb-3">
                       <li><a class="nav-link u-header__sub-menu-nav-link" href="#">iOS Developement (Games)</a></li>
                       <li><a class="nav-link u-header__sub-menu-nav-link" href="#">iOS Developement (Basic)</a></li>
@@ -91,7 +97,7 @@
                   </div>
 
                   <div class="col-sm-3 mb-3 mb-sm-0">
-                    <span class="u-header__sub-menu-title">Web Developement</span>
+                    <span class="u-header__sub-menu-title">Web Dev Projects</span>
                     <ul class="u-header__sub-menu-nav-group">
                       <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Python (Django and Flask)</a></li>
                       <li><a class="nav-link u-header__sub-menu-nav-link" href="#">Full-Stack Javascript (Node.JS)</a></li>
@@ -104,24 +110,95 @@
             </li>
             <!-- End Nav Item -->
 
-            <!-- Link -->
-            <li class="nav-item u-header__nav-item active">
-              <a class="nav-link u-header__nav-link" href="#">Active link</a>
-            </li>
-            <!-- End Link -->
 
-            <!-- Link -->
-            <li class="nav-item u-header__nav-item">
-              <a class="nav-link u-header__nav-link disabled" href="#">Disabled</a>
+            <!-- Interactive Nav Item -->
+            <li class="nav-item hs-has-mega-menu u-header__nav-item"
+                data-event="hover"
+                data-animation-in="slideInUp"
+                data-animation-out="fadeOut"
+                data-position="left">
+              <a id="interactiveMegaMenu3" class="nav-link u-header__nav-link u-header__nav-link-toggle" href="javascript:;" aria-haspopup="true" aria-expanded="false">
+                Before getting started
+              </a>
+
+              <!-- Interactive Nav Item - Mega Menu -->
+              <div class="hs-mega-menu u-header__sub-menu" aria-labelledby="interactiveMegaMenu3">
+                <div class="row no-gutters">
+                  <div class="col-md-6">
+                    <!-- Promo Item -->
+                    <div class="u-header__promo-item">
+                      <a class="u-header__promo-link" href="#">
+                        <div class="media align-items-center">
+                          <img class="js-svg-injector u-header__promo-icon" src="{{ url_for('static', filename='front/assets/svg/icons/icon-13.svg')}}" alt="SVG">
+                          <div class="media-body">
+                            <span class="u-header__promo-title">About Freeline</span>
+                            <small class="u-header__promo-text">Read up on Freeline in general, and get a feel for how the process works before you begin!</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- End Promo Item -->
+
+                    <!-- Promo Item -->
+                    <div class="u-header__promo-item">
+                      <a class="u-header__promo-link" href="#">
+                        <div class="media align-items-center">
+                          <img class="js-svg-injector u-header__promo-icon" src="{{ url_for('static', filename='front/assets/svg/icons/icon-19.svg')}}" alt="SVG">
+                          <div class="media-body">
+                            <span class="u-header__promo-title">Employers</span>
+                            <small class="u-header__promo-text">Read up on how here at Freeline we ensure low-hassle, streamlined equity compensation deals.</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- End Promo Item -->
+
+                    <!-- Promo Item -->
+                    <div class="u-header__promo-item">
+                      <a class="u-header__promo-link" href="#">
+                        <div class="media align-items-center">
+                          <img class="js-svg-injector u-header__promo-icon" src="{{ url_for('static', filename='front/assets/svg/icons/icon-5.svg')}}" alt="SVG">
+                          <div class="media-body">
+                            <span class="u-header__promo-title">Freelancers</span>
+                            <small class="u-header__promo-text">Read up on the equity comp process so you're fully equipped to negotiate with employers for your fair share.</small>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- End Promo Item -->
+                  </div>
+
+                  <!-- Promo -->
+                  <div class="col-md-6 u-header__promo">
+                    <a class="d-block u-header__promo-inner" href="#">
+                      <div class="position-relative">
+                        <img class="img-fluid rounded mb-3" src="{{ url_for('static', filename='img/header.jpg')}}" alt="Image Description">
+                        <span class="badge badge-success badge-pill badge-pos shadow-sm mt-3">New</span>
+                      </div>
+                      <span class="text-secondary font-size-1">Freeline wants to ensure your fully equipped to negotiate for equity.</span>
+                    </a>
+                  </div>
+                  <!-- End Promo -->
+                </div>
+              </div>
+              <!-- End Interactive Nav Item - Mega Menu -->
             </li>
-            <!-- End Link -->
+            <!-- End Interactive Nav Item -->
 
             <!-- Button -->
+            {% if current_user.is_authenticated %}
             <li class="nav-item u-header__nav-last-item">
-              <a class="btn btn-sm btn-primary transition-3d-hover" href="{{ url_for('auth.login')}}" target="_blank">
-                Login or register
+              <a class="btn btn-sm btn-primary transition-3d-hover" href="{{ url_for('auth.logout')}}" target="_blank">
+                Logout
               </a>
             </li>
+            {% else %}
+            <li class="nav-item u-header__nav-last-item">
+              <a class="btn btn-sm btn-primary transition-3d-hover" href="{{ url_for('auth.login')}}" target="_blank">
+                Login or Register
+              </a>
+            </li>
+            {% endif %}
             <!-- End Button -->
           </ul>
         </div>
@@ -133,69 +210,142 @@
 </header>
 {% endblock navbar %}
 {% block content %}
+<div class="container">
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-info alert-dismissable fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">×</span>
+  </button>
+          </div>
+          {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+{% block app_content %}{% endblock app_content %}
+{% endblock content %}
 
-{% endblock %}
-{% block scripts %}
+{% block global_js %}
 <!-- JS Global Compulsory -->
 <script src="{{ url_for('static', filename='front/assets/vendor/jquery/dist/jquery.min.js')}}"></script>
 <script src="{{ url_for('static', filename='front/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js')}}"></script>
 <script src="{{ url_for('static', filename='front/assets/vendor/popper.js/dist/umd/popper.min.js')}}"></script>
 <script src="{{ url_for('static', filename='front/assets/vendor/bootstrap/bootstrap.min.js')}}"></script>
-
+{% endblock global_js %}
+{% block implement_js %}
 <!-- JS Implementing Plugins -->
 <script src="{{ url_for('static', filename='front/assets/vendor/hs-megamenu/src/hs.megamenu.js')}}"></script>
-<script src="{{ url_for('static', filename='front/assets/vendor/typed.js/lib/typed.min.js')}}"></script>
-<!----------------------->
+<script src="{{ url_for('static', filename='front/assets/vendor/svg-injector/dist/svg-injector.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/fancybox/jquery.fancybox.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/jquery-validation/dist/jquery.validate.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/ion-rangeslider/js/ion.rangeSlider.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/slick-carousel/slick/slick.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/dzsparallaxer/dzsparallaxer.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/jquery-validation/dist/jquery.validate.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.focus-state.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/pwstrength-bootstrap/dist/pwstrength-bootstrap.min.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.password-strength.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/vendor/bootstrap-tagsinput/js/bootstrap-tagsinput.min.js')}}"></script>
 
+</script>
+{% endblock implement_js %}
+<!----------------------->
+{% block front_js %}
 <!-- JS Front -->
 <script src="{{ url_for('static', filename='front/assets/js/hs.core.js')}}"></script>
 <script src="{{ url_for('static', filename='front/assets/js/components/hs.header.js')}}"></script>
 <script src="{{ url_for('static', filename='front/assets/js/components/hs.unfold.js')}}"></script>
-
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.focus-state.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.malihu-scrollbar.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.validation.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.show-animation.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.svg-injector.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.fancybox.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.range-slider.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.slick-carousel.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.go-to.js')}}"></script>
+<script src="{{ url_for('static', filename='front/assets/js/components/hs.step-form.js')}}"></script>
+{% endblock front_js %}
 <!------------------------>
 <!-- JS Plugins Init-->
+{% block init_js %}
 <script>
+
   $(document).on('ready', function () {
-    // initialization of header
-    $.HSCore.components.HSHeader.init($('#header'));
+    // initialization of password strength module
+    $.HSCore.components.HSPasswordStrength.init('#newPassword');
   });
-</script>
 
+  $(document).on('ready', function () {
+    // initialization of forms
+    $.HSCore.components.HSFocusState.init();
+  });
 
-<script>
+  $(document).on('ready', function () {
+    // initialization of step form
+    $.HSCore.components.HSStepForm.init('.js-step-form');
+  });
+
   $(window).on('load', function () {
-    // initialization of HSMegaMenu component
-    $('.js-mega-menu').HSMegaMenu({
-      event: 'hover',
-      pageContainer: $('.container'),
-      breakpoint: 767.98,
-      hideTimeOut: 0
+      // initialization of HSMegaMenu component
+      $('.js-mega-menu').HSMegaMenu({
+        event: 'hover',
+        pageContainer: $('.container'),
+        breakpoint: 767.98,
+        hideTimeOut: 0
+      });
+
+      // initialization of svg injector module
+      $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
     });
-  });
-</script>
 
+    $(document).on('ready', function () {
+      // initialization of header
+      $.HSCore.components.HSHeader.init($('#header'));
 
-<script>
-  $(document).on('ready', function () {
-    // initialization of unfold component
-    $.HSCore.components.HSUnfold.init($('[data-unfold-target]'));
-  });
-</script>
+      // initialization of unfold component
+      $.HSCore.components.HSUnfold.init($('[data-unfold-target]'), {
+        afterOpen: function () {
+          $(this).find('input[type="search"]').focus();
+        }
+      });
 
-<script>
-  $(document).on('ready', function () {
-    // initialization of text animation (typing)
-    var typed = new Typed(".u-text-animation.u-text-animation--typing", {
-      strings: [" earn equity in new startups.", "engineer your business idea.", "win more business."],
-      typeSpeed: 60,
-      loop: true,
-      backSpeed: 25,
-      backDelay: 1500
+      // initialization of malihu scrollbar
+      $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
+
+      // initialization of forms
+      $.HSCore.components.HSFocusState.init();
+
+      // initialization of form validation
+      $.HSCore.components.HSValidation.init('.js-validate', {
+        rules: {
+          confirmPassword: {
+            equalTo: '#signupPassword'
+          }
+        }
+      });
+
+      // initialization of show animations
+      $.HSCore.components.HSShowAnimation.init('.js-animation-link');
+
+      // initialization of fancybox
+      $.HSCore.components.HSFancyBox.init('.js-fancybox');
+
+      // initialization of forms
+      $.HSCore.components.HSRangeSlider.init('.js-range-slider');
+
+      // initialization of slick carousel
+      $.HSCore.components.HSSlickCarousel.init('.js-slick-carousel');
+
+      // initialization of go to
+      $.HSCore.components.HSGoTo.init('.js-go-to');
     });
-  });
-</script>
 
-{% endblock scripts %}
+</script>
+{% endblock init_js %}
 
 </body>
 </html>
