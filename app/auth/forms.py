@@ -35,6 +35,8 @@ class FreelancerRegistrationForm(FlaskForm):
     , EqualTo('password')], render_kw={'placeholder': _l("Repeat your password")})
     first = StringField(_l("First name", validators=[DataRequired()]))
     last = StringField(_l("Last name", validators=[DataRequired()]))
+    city = StringField(_l("Enter your city", validators=[DataRequired()]))
+    state = SelectField(_l("Enter your state", choices=l18n_tuples(states), validators=[DataRequired()]))
     occupation = SelectField(_l("What job do you do?"), choices=l18n_tuples(job_types), validators=[DataRequired()])
     hours_a_week = SelectField(_l("How many hours a week are you available?"), choices=l18n_tuples(hours_a_week), validators=[DataRequired()])
     about_me = TextAreaField(_l('Tell us about yourself: Employment History, Skills and Languages, Past Projects, etc.'), validators=[Length(min=0, max=1000)])

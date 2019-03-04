@@ -26,11 +26,12 @@ class JobCatTestCase(unittest.TestCase):
         job = Job(name='A')
         db.session.add_all([cat, sub, job])
         db.session.commit()
-        cat.assign_sub_cat(sub)
         job.add_cat(cat)
+        cat.assign_sub_cat(sub)
+        db.session.commit()
         job.add_sub_cat(sub)
         db.session.commit()
-        check = (sub in job.subcats)
+        check = (sub in job.subs)
         self.assertTrue(check)
 
 

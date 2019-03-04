@@ -1,92 +1,1062 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-  <br>
-  <h3> Most recently active freelancers </h3>
-  <br>
-  <div class="card-deck">
-  {% for freelancer in freelancers[0:3] %}
-  <div class="row">
-      <div class="col-sm-6">
-        <div class="card" style="width: 15rem">
-      {% if freelancer.avatar_data %}
-      <img class="card-img-top" src="{{freelancer.make_avatar_url() }}" alt="Card image cap">
-      {% else %}
-      <img class="card-img-top" src="{{ freelancer.avatar(72) }}" alt="Card image cap">
-      {% endif %}
-      <div class="card-body">
-        <h5 class="card-title">{{ freelancer.first }} {{ freelancer.last }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
-        <p class="card-text">{{ freelancer.about_me }}</p>
-        <p class="card-text"><small class="text-muted">{{ freelancer.last_seen_string() }}</small></p>
-        <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
-  </div>
-  </div>
-</div>
-</div>
-  {% endfor %}
-  </div>
-<br>
-<br>
-<div class="card-deck">
-  {% for freelancer in freelancers[4:7] %}
-  <div class="row">
-      <div class="col-sm-6">
-  <div class="card" style="width: 15rem">
-      {% if freelancer.avatar_data %}
-  <img class="card-img-top" src="{{freelancer.make_avatar_url() }}" alt="Card image cap">
-      {% else %}
-  <img class="card-img-top" src="{{ freelancer.avatar(64) }}" alt="Card image cap">
-      {% endif %}
-  <div class="card-body">
-    <h5 class="card-title">{{ freelancer.first }} {{ freelancer.last }}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
-    <p class="card-text">{{ freelancer.about_me }}</p>
-    <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
-  </div>
-  </div>
-</div>
-</div>
-  {% endfor %}
-  </div>
-<br>
-<br>
-  <div class="card-deck">
-  {% for freelancer in freelancers[6:10] %}
-  <div class="row">
-      <div class="col-sm-6">
-  <div class="card" style="width: 15rem">
-      {% if freelancer.avatar_data %}
-  <img class="card-img-top" src="{{freelancer.make_avatar_url() }}" alt="Card image cap">
-      {% else %}
-  <img class="card-img-top" src="{{ freelancer.avatar(64) }}" alt="Card image cap">
-      {% endif %}
-  <div class="card-body">
-    <h5 class="card-title">{{ freelancer.first }} {{ freelancer.last }}</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{ freelancer.occupation }}</h6>
-    <p class="card-text">{{ freelancer.about_me }}</p>
-    <a href="{{ url_for('freelancer.user', username=freelancer.username) }}" class='btn btn-primary'> {{ freelancer.first }}'s profile </a>
-  </div>
-  </div>
-</div>
-</div>
-  {% endfor %}
-  </div>
-  <br>
+<main id="content" role="main">
+    <!-- Hero Section -->
+    <div class="bg-light">
+      <div class="container space-1">
+        <!-- Search Jobs Form -->
+        <form class="row mb-2">
+          <div class="col-lg-5 mb-4 mb-lg-0">
+            <!-- Input -->
+            <label class="d-block">
+              <span class="h5 d-block text-dark font-weight-semi-bold mb-0">What kind of freelancer are you looking for?</span>
+              <small class="d-block text-secondary">job title, keywords, or company</small>
+            </label>
+            <div class="js-focus-state">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Keyword or title" aria-label="Keyword or title" aria-describedby="keywordInputAddon" value="Web developer">
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <span class="fas fa-search" id="keywordInputAddon"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- End Input -->
+          </div>
 
-  <nav aria-label="...">
-       <ul class="pagination">
-           <li class="previous{% if not prev_url %} disabled{% endif %}">
-               <a class="page-link" href="{{ prev_url or '#' }}">
-                   <span aria-hidden="true">&larr;</span> More recently active
-               </a>
-           </li>
-           <li class="next{% if not next_url %} disabled{% endif %}">
-               <a class="page-link" href="{{ next_url or '#' }}">
-                  Less recently active <span aria-hidden="true">&rarr;</span>
-               </a>
-           </li>
-       </ul>
-   </nav>
-  </div>
+          <div class="col-lg-5 mb-4 mb-lg-0">
+            <!-- Input -->
+            <label class="d-block">
+              <span class="h5 d-block text-dark font-weight-semi-bold mb-0">Location</span>
+              <small class="d-block text-secondary">city, state, or zip code</small>
+            </label>
+            <div class="js-focus-state">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="City, state, or zip" aria-label="City, state, or zip" aria-describedby="locationInputAddon" value="United Kingdom">
+                <div class="input-group-append">
+                  <span class="input-group-text">
+                    <span class="fas fa-map-marker-alt" id="locationInputAddon"></span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- End Input -->
+          </div>
+
+          <div class="col-lg-2 align-self-lg-end">
+            <button type="submit" class="btn btn-block btn-primary transition-3d-hover">Find Freelancers</button>
+          </div>
+          <!-- End Checkbox -->
+        </form>
+        <!-- End Search Jobs Form -->
+      </div>
+    </div>
+    <!-- End Hero Section -->
+
+    <!-- Jobs Section -->
+    <div class="container space-2">
+      <div class="row">
+        <div class="col-lg-9">
+          <!-- Filter -->
+          <div class="row justify-content-between align-items-center mb-4">
+            <!-- Title -->
+            <div class="col-sm-4 col-md-6 mb-3 mb-sm-0">
+              <h1 class="h5 mb-0">Search results</h1>
+            </div>
+            <!-- End Title -->
+
+            <div class="col-sm-8 col-md-6 text-sm-right">
+              <form class="js-validate" novalidate="novalidate">
+                <ul class="list-inline mb-0">
+                  <li class="list-inline-item">
+                    <!-- Select -->
+                    <div class="dropdown bootstrap-select js-select dropdown-select fit-width"><select class="js-select selectpicker dropdown-select" data-width="fit" data-style="btn-soft-primary btn-xs" tabindex="-98">
+                      <option value="sortByFilterSelect1" selected="">Sort by</option>
+                      <option value="sortByFilterSelect2">Relevance</option>
+                      <option value="sortByFilterSelect3">Date</option>
+                    </select><button type="button" class="btn dropdown-toggle btn-soft-primary btn-xs" data-toggle="dropdown" role="button" title="Sort by"><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Sort by</div></div> </div></button><div class="dropdown-menu " role="combobox"><div class="inner show" role="listbox" aria-expanded="false" tabindex="-1"><ul class="dropdown-menu inner show"></ul></div></div></div>
+                    <!-- End Select -->
+                  </li>
+                  <li class="list-inline-item">
+                    <span class="btn btn-xs btn-soft-primary active">
+                      <span class="fas fa-th-large mr-2"></span>
+                      Grid
+                    </span>
+                  </li>
+                  <li class="list-inline-item">
+                    <a class="btn btn-xs btn-soft-primary" href="jobs-list.html">
+                      <span class="fas fa-list mr-2"></span>
+                      List
+                    </a>
+                  </li>
+                </ul>
+              </form>
+            </div>
+          </div>
+          <!-- End Filter -->
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Freelancers -->
+        <div class="col-lg-9">
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <div class="u-avatar position-relative mr-3">
+                  <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='front/assets/img/100x100/img9.jpg')}}" alt="Image Description">
+                  <span class="badge badge-xs badge-outline-success badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </div>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h1 class="h6 mb-0">
+                    <a href="employee-profile.html">Jorge Fields</a>
+                  </h1>
+                  <small class="text-secondary">Apps and Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark1">
+                    <label class="bookmark-checkbox-label" for="bookmark1"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">I can start working right now and I can WORK FULL TIME on your project during the entire development of your project.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h2 class="small text-secondary mb-0">Location</h2>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">London</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h3 class="small text-secondary mb-0">Hourly</h3>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">35</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">15</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Review -->
+                <div class="small">
+                  <div class="text-warning mb-1">
+                    <span class="fas fa-star"></span>
+                    <span class="fas fa-star"></span>
+                    <span class="fas fa-star"></span>
+                    <span class="fas fa-star"></span>
+                    <span class="fas fa-star"></span>
+                  </div>
+                  <span class="font-weight-semi-bold">4.91</span>
+                  <span class="text-muted">(12k+ reviews)</span>
+                </div>
+                <!-- End Review -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <span class="btn btn-icon btn-soft-primary rounded-circle mr-4">
+                  <span class="btn-icon__inner">BS</span>
+                  <span class="badge badge-xs badge-outline-success badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </span>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">Bertha Sandoval</a>
+                  </h3>
+                  <small class="text-secondary">Senior Android, iOS, Web Developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark3">
+                    <label class="bookmark-checkbox-label" for="bookmark3"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">Hello and welcome! I am an Web Developer with more than 5 years of commercial experience in this area.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Oxford</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">30</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">15</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="far fa-star"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">4.5</span>
+                    <span class="text-muted">(132 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <div class="u-avatar position-relative mr-3">
+                  <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='front/assets/img/100x100/img10.jpg')}}" alt="Image Description">
+                  <span class="badge badge-xs badge-outline-success badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </div>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">Ola Nunez</a>
+                  </h3>
+                  <small class="text-secondary">Fullstack Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark4">
+                    <label class="bookmark-checkbox-label" for="bookmark4"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">I am an expert in Web development with 6+ years of experience, currently working as a team leader, solution architect, and developer.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Leicester</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">49</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">23</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star-half-alt"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">4.7</span>
+                    <span class="text-muted">(120 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <span class="btn btn-icon btn-soft-danger rounded-circle mr-4">
+                  <span class="btn-icon__inner">JB</span>
+                  <span class="badge badge-xs badge-outline-danger badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </span>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">John Cannon</a>
+                  </h3>
+                  <small class="text-secondary">Native Mobile and Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark5">
+                    <label class="bookmark-checkbox-label" for="bookmark5"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">I'm a senior level mobile/web developer based out of New York, USA. I've been working on web based projects since 2018.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Bradford</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">25</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">3</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star-half-alt"></span>
+                      <span class="far fa-star"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">3.9</span>
+                    <span class="text-muted">(85 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <span class="btn btn-icon btn-soft-success rounded-circle mr-4">
+                  <span class="btn-icon__inner">LS</span>
+                  <span class="badge badge-xs badge-outline-success badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </span>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">Leo Snyder</a>
+                  </h3>
+                  <small class="text-secondary">UK based Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark6">
+                    <label class="bookmark-checkbox-label" for="bookmark6"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">I'm an analytical person and always identify business requirements and needs. Design develop and implement solutions will be my goal.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Oxford</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">110</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">99</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="far fa-star"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">4.3</span>
+                    <span class="text-muted">(5 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <div class="u-avatar position-relative mr-3">
+                  <img class="img-fluid rounded-circle" src="{{ url_for('static', filename='front/assets/img/100x100/img8.jpg')}}" alt="Image Description">
+                  <span class="badge badge-xs badge-outline-danger badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </div>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">Chester Haynes</a>
+                  </h3>
+                  <small class="text-secondary">Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark7">
+                    <label class="bookmark-checkbox-label" for="bookmark7"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">Web developer from Leicester and with passion to Web. Contact me if you are looking to build something amazing.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="{{ url_for('static', filename='front/assets/vendor/flag-icon-css/flags/1x1/gb.svg')}}" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Leicester</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">65</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">47</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="far fa-star"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">4.1</span>
+                    <span class="text-muted">(131 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <div class="u-avatar position-relative mr-3">
+                  <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img12.jpg" alt="Image Description">
+                  <span class="badge badge-xs badge-outline-danger badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </div>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">James Wade</a>
+                  </h3>
+                  <small class="text-secondary">PHP and Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark9">
+                    <label class="bookmark-checkbox-label" for="bookmark9"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">Self-motivated, efficient and hardworking Web Developer with keen interest in new technical challenges.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="../../assets/vendor/flag-icon-css/flags/1x1/gb.svg" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">Leeds</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">77</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">78</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">5.0</span>
+                    <span class="text-muted">(1k+ reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <!-- Item -->
+          <div class="card mb-5">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="media align-items-center mb-4">
+                <!-- Avatar -->
+                <div class="u-avatar position-relative mr-3">
+                  <img class="img-fluid rounded-circle" src="../../assets/img/100x100/img11.jpg" alt="Image Description">
+                  <span class="badge badge-xs badge-outline-success badge-pos badge-pos--bottom-left rounded-circle"></span>
+                </div>
+                <!-- End Avatar -->
+
+                <div class="media-body">
+                  <h3 class="h6 mb-0">
+                    <a href="employee-profile.html">Noah Wong</a>
+                  </h3>
+                  <small class="text-secondary">UI/UX designer &amp; Web developer</small>
+                </div>
+
+                <div class="align-self-start ml-auto">
+                  <!-- Bookmark -->
+                  <div class="bookmark-checkbox d-inline-block" data-toggle="tooltip" data-placement="top" title="" data-original-title="Save">
+                    <input type="checkbox" class="bookmark-checkbox-input" id="bookmark8">
+                    <label class="bookmark-checkbox-label" for="bookmark8"></label>
+                  </div>
+                  <!-- End Bookmark -->
+                </div>
+              </div>
+              <!-- End Header -->
+
+              <p class="font-size-1">As a long-experienced developer, I have developed a wide range of a web solutions.</p>
+            </div>
+
+            <div class="card-footer border-top-0 pt-0 px-4 pb-4">
+              <div class="d-sm-flex align-items-sm-center">
+                <!-- Location -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Location</h4>
+                  <img class="img-fluid max-width-3 rounded-circle align-middle mr-1" src="../../assets/vendor/flag-icon-css/flags/1x1/gb.svg" alt="United Kingdom Flag">
+                  <span class="align-middle font-size-1 font-weight-medium">London</span>
+                </div>
+                <!-- End Location -->
+
+                <!-- Hourly -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Hourly</h4>
+                  <small class="fas fa-clock text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">55</span>
+                </div>
+                <!-- End Hourly -->
+
+                <!-- Projects -->
+                <div class="u-ver-divider u-ver-divider--none-sm pr-4 mr-4 mb-3 mb-sm-0">
+                  <h4 class="small text-secondary mb-0">Projects</h4>
+                  <small class="fas fa-briefcase text-secondary mr-1"></small>
+                  <span class="align-middle font-size-1 font-weight-medium">19</span>
+                </div>
+                <!-- End Projects -->
+
+                <!-- Success Rate -->
+                <div class="mr-3">
+                  <!-- Review -->
+                  <div class="small">
+                    <div class="text-warning mb-1">
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star"></span>
+                      <span class="fas fa-star-half-alt"></span>
+                    </div>
+                    <span class="font-weight-semi-bold">4.5</span>
+                    <span class="text-muted">(427 reviews)</span>
+                  </div>
+                  <!-- End Review -->
+                </div>
+                <!-- End Success Rate -->
+              </div>
+            </div>
+          </div>
+          <!-- End Item -->
+
+          <div class="py-3"></div>
+
+          <!-- Pagination -->
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item ml-0">
+                <a class="page-link" href="#" aria-label="Previous">
+                  <span aria-hidden="true">«</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+              <li class="page-item"><a class="page-link" href="#">12</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                  <span aria-hidden="true">»</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <!-- End Pagination -->
+        </div>
+        <!-- End Freelancers -->
+
+        <!-- Filters -->
+        <div class="col-lg-3">
+          <form>
+            <div class="border-bottom pb-4 mb-4">
+              <h4 class="font-size-1 font-weight-semi-bold text-uppercase mb-3">Salary</h4>
+
+              <!-- Range Slider -->
+              <span class="irs js-irs-0 u-range-slider u-range-slider-indicator u-range-slider-grid irs-with-grid"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="display: none; visibility: visible;">0</span><span class="irs-max" style="display: none; visibility: visible;">1</span><span class="irs-from" style="visibility: visible; left: 20.1605%;">$2 500</span><span class="irs-to" style="visibility: visible; left: 67.8909%;">$7 500</span><span class="irs-single" style="visibility: hidden; left: 37.7683%;">$2 500 — $7 500</span></span><span class="irs-grid" style="width: 95.2941%; left: 2.25294%;"><span class="irs-grid-pol" style="left: 0%"></span><span class="irs-grid-text js-grid-text-0" style="left: 0%; margin-left: -3.92157%;">0</span><span class="irs-grid-pol small" style="left: 20%"></span><span class="irs-grid-pol small" style="left: 15%"></span><span class="irs-grid-pol small" style="left: 10%"></span><span class="irs-grid-pol small" style="left: 5%"></span><span class="irs-grid-pol" style="left: 25%"></span><span class="irs-grid-text js-grid-text-1" style="left: 25%; visibility: visible; margin-left: -4.4326%;">2 500</span><span class="irs-grid-pol small" style="left: 45%"></span><span class="irs-grid-pol small" style="left: 40%"></span><span class="irs-grid-pol small" style="left: 35%"></span><span class="irs-grid-pol small" style="left: 30%"></span><span class="irs-grid-pol" style="left: 50%"></span><span class="irs-grid-text js-grid-text-2" style="left: 50%; visibility: visible; margin-left: -4.49755%;">5 000</span><span class="irs-grid-pol small" style="left: 70%"></span><span class="irs-grid-pol small" style="left: 65%"></span><span class="irs-grid-pol small" style="left: 60%"></span><span class="irs-grid-pol small" style="left: 55%"></span><span class="irs-grid-pol" style="left: 75%"></span><span class="irs-grid-text js-grid-text-3" style="left: 75%; visibility: visible; margin-left: -4.34926%;">7 500</span><span class="irs-grid-pol small" style="left: 95%"></span><span class="irs-grid-pol small" style="left: 90%"></span><span class="irs-grid-pol small" style="left: 85%"></span><span class="irs-grid-pol small" style="left: 80%"></span><span class="irs-grid-pol" style="left: 100%"></span><span class="irs-grid-text js-grid-text-4" style="left: 100%; margin-left: -4.88848%;">10 000</span></span><span class="irs-bar" style="left: 26.1765%; width: 47.6471%;"></span><span class="irs-shadow shadow-from" style="display: none;"></span><span class="irs-shadow shadow-to" style="display: none;"></span><span class="irs-slider from" style="left: 23.8235%;"></span><span class="irs-slider to type_last" style="left: 71.4706%;"></span></span><input class="js-range-slider irs-hidden-input" type="text" data-extra-classes="u-range-slider u-range-slider-indicator u-range-slider-grid" data-type="double" data-grid="true" data-hide-from-to="false" data-prefix="$" data-min="0" data-max="10000" data-from="2500" data-to="7500" data-result-min="#rangeSliderExample3MinResult" data-result-max="#rangeSliderExample3MaxResult" tabindex="-1" readonly="">
+              <div class="d-flex justify-content-between mt-4">
+                <input type="text" class="form-control form-control-sm max-width-10" id="rangeSliderExample3MinResult">
+                <input type="text" class="form-control form-control-sm max-width-10 mt-0" id="rangeSliderExample3MaxResult">
+              </div>
+              <!-- End Range Slider -->
+            </div>
+
+            <div class="border-bottom pb-4 mb-4">
+              <h4 class="font-size-1 font-weight-semi-bold text-uppercase mb-3">Job type</h4>
+
+              <!-- Full Time Job Type Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="jobTypeFullTime" checked="">
+                  <label class="custom-control-label" for="jobTypeFullTime">Full time</label>
+                </div>
+                <small>16273</small>
+              </div>
+              <!-- End Full Time Job Type Checkbox -->
+
+              <!-- Part Time Job Type Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="jobTypePartTime">
+                  <label class="custom-control-label" for="jobTypePartTime">Part time</label>
+                </div>
+                <small>1768</small>
+              </div>
+              <!-- End Part Time Job Type Checkbox -->
+
+              <!-- Contract Job Type Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="jobTypeContract">
+                  <label class="custom-control-label" for="jobTypeContract">Contract</label>
+                </div>
+                <small>477</small>
+              </div>
+              <!-- End Contract Job Type Checkbox -->
+
+              <!-- Freelance Job Type Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="jobTypeFreelance">
+                  <label class="custom-control-label" for="jobTypeFreelance">Freelance</label>
+                </div>
+                <small>354</small>
+              </div>
+              <!-- End Freelance Job Type Checkbox -->
+            </div>
+
+            <div class="border-bottom pb-4 mb-4">
+              <h4 class="font-size-1 font-weight-semi-bold text-uppercase mb-3">Location</h4>
+
+              <!-- Location Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="location1" checked="">
+                  <label class="custom-control-label" for="location1">London</label>
+                </div>
+                <small>16273</small>
+              </div>
+              <!-- End Location Checkbox -->
+
+              <!-- Location Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="location2">
+                  <label class="custom-control-label" for="location2">Birmingham</label>
+                </div>
+                <small>1768</small>
+              </div>
+              <!-- End Location Checkbox -->
+
+              <!-- Location Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="location3">
+                  <label class="custom-control-label" for="location3">Bradford</label>
+                </div>
+                <small>477</small>
+              </div>
+              <!-- End Location Checkbox -->
+
+              <!-- Location Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="location4">
+                  <label class="custom-control-label" for="location4">Leicester</label>
+                </div>
+                <small>354</small>
+              </div>
+              <!-- End Location Checkbox -->
+
+              <!-- Location Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="location5">
+                  <label class="custom-control-label" for="location5">Liverpool</label>
+                </div>
+                <small>354</small>
+              </div>
+              <!-- End Location Checkbox -->
+
+              <!-- View More - Collapse -->
+              <div class="collapse" id="collapseLocation">
+                <!-- Location Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="location6">
+                    <label class="custom-control-label" for="location6">Manchester</label>
+                  </div>
+                  <small>239</small>
+                </div>
+                <!-- End Location Checkbox -->
+
+                <!-- Location Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="location7">
+                    <label class="custom-control-label" for="location7">Bristol</label>
+                  </div>
+                  <small>45</small>
+                </div>
+                <!-- End Location Checkbox -->
+
+                <!-- Location Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="location8">
+                    <label class="custom-control-label" for="location8">Leeds</label>
+                  </div>
+                  <small>1</small>
+                </div>
+                <!-- End Location Checkbox -->
+
+                <!-- Location Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="location9">
+                    <label class="custom-control-label" for="location9">Cambridge</label>
+                  </div>
+                  <small>71</small>
+                </div>
+                <!-- End Location Checkbox -->
+              </div>
+              <!-- End View More - Collapse -->
+
+              <!-- Link -->
+              <a class="link link-collapse small font-size-1" data-toggle="collapse" href="#collapseLocation" role="button" aria-expanded="false" aria-controls="collapseLocation">
+                <span class="link-collapse__default">View more</span>
+                <span class="link-collapse__active">View less</span>
+                <span class="link__icon ml-1">
+                  <span class="link__icon-inner">+</span>
+                </span>
+              </a>
+              <!-- End Link -->
+            </div>
+
+            <div class="border-bottom pb-4 mb-4">
+              <h4 class="font-size-1 font-weight-semi-bold text-uppercase mb-3">Company</h4>
+
+              <!-- Weeks Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="company1" checked="">
+                  <label class="custom-control-label text-lh-md" for="company1">Airbnb</label>
+                </div>
+                <small>66723</small>
+              </div>
+              <!-- End Weeks Checkbox -->
+
+              <!-- Weeks Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="company2">
+                  <label class="custom-control-label text-lh-md" for="company2">Google</label>
+                </div>
+                <small>10768</small>
+              </div>
+              <!-- End Weeks Checkbox -->
+
+              <!-- Weeks Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="company3">
+                  <label class="custom-control-label text-lh-md" for="company3">Amazon.com</label>
+                </div>
+                <small>3477</small>
+              </div>
+              <!-- End Weeks Checkbox -->
+
+              <!-- Weeks Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="company4">
+                  <label class="custom-control-label text-lh-md" for="company4">Dribbble</label>
+                </div>
+                <small>354</small>
+              </div>
+              <!-- End Weeks Checkbox -->
+
+              <!-- View More - Collapse -->
+              <div class="collapse" id="collapseCompany">
+                <!-- Weeks Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="company5">
+                    <label class="custom-control-label text-lh-md" for="company5">Adobe</label>
+                  </div>
+                  <small>12</small>
+                </div>
+                <!-- End Weeks Checkbox -->
+
+                <!-- Weeks Checkbox -->
+                <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="company6">
+                    <label class="custom-control-label text-lh-md" for="company6">Slack</label>
+                  </div>
+                  <small>670</small>
+                </div>
+                <!-- End Weeks Checkbox -->
+              </div>
+              <!-- End View More - Collapse -->
+
+              <!-- Link -->
+              <a class="link link-collapse small font-size-1" data-toggle="collapse" href="#collapseCompany" role="button" aria-expanded="false" aria-controls="collapseCompany">
+                <span class="link-collapse__default">View more</span>
+                <span class="link-collapse__active">View less</span>
+                <span class="link__icon ml-1">
+                  <span class="link__icon-inner">+</span>
+                </span>
+              </a>
+              <!-- End Link -->
+            </div>
+
+            <div class="border-bottom pb-4 mb-4">
+              <h4 class="font-size-1 font-weight-semi-bold text-uppercase mb-3">Category</h4>
+
+              <!-- Category Development Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="midLevel">
+                  <label class="custom-control-label" for="midLevel">Mid level</label>
+                </div>
+                <small>66723</small>
+              </div>
+              <!-- End Category Development Checkbox -->
+
+              <!-- Category Design Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="seniorLevel">
+                  <label class="custom-control-label" for="seniorLevel">Senior level</label>
+                </div>
+                <small>10768</small>
+              </div>
+              <!-- End Category Design Checkbox -->
+
+              <!-- Category Marketing Checkbox -->
+              <div class="form-group d-flex align-items-center justify-content-between font-size-1 text-secondary mb-2">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="entryLevel">
+                  <label class="custom-control-label" for="entryLevel">Entry level</label>
+                </div>
+                <small>3477</small>
+              </div>
+              <!-- End Category Marketing Checkbox -->
+            </div>
+
+            <button type="button" class="btn btn-sm btn-block btn-soft-secondary transition-3d-hover">Clear All</button>
+          </form>
+        </div>
+        <!-- End Filters -->
+      </div>
+    </div>
+    <!-- End Jobs Section -->
+  </main>
 {% endblock %}

@@ -7,37 +7,125 @@
     <div class="mb-7">
           <h1 class="h3 text-primary font-weight-normal mb-0">Welcome to <span class="font-weight-semi-bold">Freeline</span></h1>
           <p>Fill out the form below to get started.</p>
-  <form method='post' novalidate="novalidate">
+    </div>
+  </div>
+<form method='post' novalidate="novalidate">
 
     {{ form.hidden_tag() }}
-
-<div class="row"><p>   Basic login details</p></div>
-  <div class="form-group">
-    {{ form.email(**{'class': 'form-control', 'placeholder': 'Enter your work email', 'aria-label': 'Enter your work email'})}}
+    <div class="col-md-6 mb-3 mb-md-0">
+    <p class="h5">Basic login details</p>
+    </div>
+<div class="col-md-6 mb-3 mb-md-0">
+<div class="js-focus-state mb-3">
+  <div class="input-group">
+    {{ form.email(**{'class': 'form-control', 'placeholder': 'Email', 'aria-label': 'Email'})}}
+    <div class="input-group-append">
+      <span class="input-group-text">
+        <span class="fas fa-envelope"></span>
+      </span>
+    </div>
+  </div>
+</div>
+  <div class="js-focus-state mb-3">
+    <div class="input-group">
+      {{ form.password(**{'class': 'form-control', 'placeholder': 'Enter a password', 'aria-label': 'Enter a password'})}}
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <span class="fas fa-lock"></span>
+        </span>
+      </div>
+    </div>
   </div>
 
-  <div class="form-group">
-    {{ form.password(**{'class': 'form-control', 'placeholder': 'Enter a password', 'aria-label': 'Enter a password'})}}
-  </div>
+    <div class="js-focus-state mb-3">
+      <div class="input-group">
+      {{ form.repeat_password(**{'class': 'form-control', 'placeholder': 'Repeat your password', 'aria-label': 'Repeat your password'})}}
+        <div class="input-group-append">
+          <span class="input-group-text">
+            <span class="fas fa-lock"></span>
+          </span>
+        </div>
+      </div>
+    </div>
 
-  <div class="form-group">
-    {{ form.repeat_password(**{'class': 'form-control', 'placeholder': 'Repeat your password', 'aria-label': 'Repeat your password'})}}
-  </div>
+</div>
 
   <div class="row"><br></div>
-  <div class="row"><p>Basic personal details</p></div>
-
-  <div class="form-group">
-    {{ form.first(**{'class': 'form-control', 'placeholder': 'Enter your first name', 'aria-label': 'Enter your first name'})}}
+    <div class="col-md-6 mb-3 mb-md-0">
+    <p class="h5">Basic personal details</p>
+    </div>
+<div class="row">
+  <div class="col-md-6 mb-3 mb-md-0">
+    <div class="js-focus-state mb-3">
+      <div class="input-group">
+      {{ form.first(**{'class': 'form-control', 'placeholder': 'Enter your first name', 'aria-label': 'Enter your first name'})}}
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <span class="fas fa-user"></span>
+        </span>
+      </div>
+      </div>
+    </div>
   </div>
 
-  <div class="form-group">
-    {{ form.last(**{'class': 'form-control', 'placeholder': 'Enter your last name', 'aria-label': 'Enter your last name'})}}
+  <div class="col-md-6 mb-3 mb-md-0">
+    <div class="js-focus-state mb-3">
+      <div class="input-group">
+      {{ form.last(**{'class': 'form-control', 'placeholder': 'Enter your last name', 'aria-label': 'Enter your last name'})}}
+        <div class="input-group-append">
+          <span class="input-group-text">
+            <span class="fas fa-user-check"></span>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
+  <div class="row">
+    <div class="col-md-6 mb-3 mb-md-0">
+      <select class="form-control">
+        <option>Enter your state</option>
+        </select>
+      </div>
+    <div class="col-md-6 mb-3 mb-md-0">
+      <div class="js-focus-state mb-3">
+        <div class="input-group">
+        {{ form.city(**{'class': 'form-control', 'placeholder': 'Enter your city', 'aria-label': 'Enter your city'})}}
+          <div class="input-group-append">
+            <span class="input-group-text">
+              <span class="fas fa-building"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+      </div>
 
-  <div class="row"><p>Work details</p></div>
+    </div>
 
+    <div class="row"><br></div>
+
+    <div class="col-md-6 mb-3 mb-md-0">
+    <p class="h5">Work details</p>
+    </div>
+  <div class="row"><br></div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3 mb-md-0">
+        <select class="form-control">
+          <option>What services are you looking to provide?</option>
+          </select>
+        </div>
+    </div>
+    <div class="row"><br></div>
+<div class="row"><br></div>
+  <div class="row">
+    <div class="col-md-6 mb-3 mb-md-0">
+    <p>How many hours a week are you available? (For over 40,  enter 40)</p>
+    </div>
+  </div>
   <!-- Range Slider -->
+<div class="row">
+  <div class="col-md-6 mb-7 mb-md-0">
 <input class="js-range-slider" type="text"
        data-extra-classes="u-range-slider u-range-slider-indicator"
        data-type="single"
@@ -45,17 +133,34 @@
        data-min="0"
        data-max="40"
        data-from="0">
+    </div>
+    </div>
 <!-- End Range Slider -->
-
-
-  </form>
+<div class="row"><br></div>
   <div class="row"><p> Enter any skills you have and hit enter</p></div>
+  <div class="col-md-6 mb-7 mb-md-0">
   <div class="u-tagsinput">
   <input type="text" value="HTML5, CSS3, JavaScript, jQuery" data-role="tagsinput">
-  </&div>
+  </div>
+  </div>
 
+<div class="row"><br></div>
+<div class="row"><p>Lastly, write a brief bio you would like to show on your profile</p></div>
+<div class="row">
+  <div class="col-md-6 mb-7 mb-md-0">
+<div class="form-group">
+    <label for="exampleFormControlTextarea1">About me</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
 </div>
 </div>
+</div>
+<div class="row align-items-center mb-5">
+  <div class="col-6 text-left">
+    <button type="submit" class="btn btn-primary transition-3d-hover">Get Started</button>
+  </div>
+</div>
+
+</form>
 </div>
 </main>
 {% endblock %}

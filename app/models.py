@@ -323,11 +323,11 @@ class Job(db.Model):
             self.cats.append(cat)
 
     def add_sub_cat(self, subcat):
-        subcats = [sc for sc in [cat.subs for cat in self.cats]]
+        list_of_subs = [cat.subs for cat in self.cats]
+        subcats = [subcat for subcat in list_of_subs]
         if subcat in subcats:
             self.subs.append(subcat)
-        else:
-            raise Exception("Subcategory not located in current catgeories of Job")
+        return subcats
 
     def post_job_time(self):
         now = datetime.utcnow()
@@ -343,7 +343,7 @@ class Cat(db.Model):
     subs = db.relationship('Sub', backref='category', lazy='dynamic')
 
     def assign_sub_cat(self, subcat):
-        if subcat not in self.subcats:
+        if subcat not in self.subs:
             self.subs.append(subcat)
 
     def __repr__(self):

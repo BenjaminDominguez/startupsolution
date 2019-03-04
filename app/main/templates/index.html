@@ -228,7 +228,7 @@
 
         <div class="col-md-6 col-lg-5">
           <!-- Icon Blocks -->\
-          
+
           <div class="media pl-lg-5">
             <figure id="icon2" class="ie-height-56 w-100 max-width-8 mr-4" style="">
               <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 120 120" style="enable-background:new 0 0 120 120;" xml:space="preserve" class="injected-svg js-svg-injector" data-parent="#icon2">
@@ -311,29 +311,4 @@
       <!-- End Reviewer -->
     </div>
     <!-- End Testimonials Section -->
-{% endblock %}
-
-{% block implement_js %}
-
-{{ super() }}
-<script src="{{ url_for('static', filename='front/assets/vendor/typed.js/lib/typed.min.js')}}"></script>
-
-{% endblock %}
-
-{% block init_js %}
-{{ super() }}
-
-<script>
-  $(document).on('ready', function () {
-    // initialization of text animation (typing)
-    var typed = new Typed(".u-text-animation-v2.u-text-animation-v2--typing", {
-      strings: ["Earn your shares.", "Realize your ideas."],
-      typeSpeed: 60,
-      loop: true,
-      backSpeed: 25,
-      backDelay: 1500
-    });
-  });
-</script>
-
 {% endblock %}

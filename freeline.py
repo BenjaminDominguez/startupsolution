@@ -1,5 +1,5 @@
 from app import create_app, db, cli
-from app.models import Startup, User, Job
+from app.models import Startup, User, Job, Cat, Sub
 from flask import render_template
 from flask_mail import Message
 from app import mail
@@ -20,5 +20,7 @@ def make_shell_context():
     'render_template': render_template,
     'Message': Message,
     'mail': mail,
-    'os': os
+    'os': os,
+    'Cat': Cat,
+    'Sub': Sub
     }

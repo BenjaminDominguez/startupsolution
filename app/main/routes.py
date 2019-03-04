@@ -17,7 +17,9 @@ def before_request():
 def index():
     return render_template('index.html')
 
+
 @bp.route('/freelancers')
+@login_required
 def freelancers_available():
     page = request.args.get('page', 1, type=int)
     most_recently_active = User.query.filter(User.roles.any(name="Freelancer")).\
